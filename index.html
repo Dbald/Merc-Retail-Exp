@@ -70,7 +70,7 @@
 						targetPosition.copy(node.getWorldPosition(new THREE.Vector3()));
 						targetPosition.add(this.data.distance);
 						this.el.object3D.position.lerp(targetPosition, 1);  // smooth movement
-
+						
 						
 					}
 				});
@@ -241,6 +241,8 @@
 				<a-assets-item id="merc-test" src="/assets/testdrive_car.gltf"></a-assets-item>
 
 			</a-assets>
+			<!-- Sky -->
+			<a-sky src="#sky" material="" geometry="" rotation="0 90 0" scale="2 2 2"></a-sky>
 			<!-- Your hidden space's entities go here -->
 			<a-entity id="test-drive">
 				<a-camera id="camera_2" position="1 1 1" rotation="1 1 1" camera="fov: 35" follow-object="target: #testCar; distance: 0 0 0" data-aframe-inspector-original-camera="">
