@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<!-- Generated automatically by AFRAME Exporter for Blender - https://silverslade.itch.io/a-frame-blender-exporter -->
+
+<head>
+	<title>Mercades-Benz Experience</title>
+	<link rel="icon" type="image/png" href="favicon.ico" />
+	<meta name="description" content="3D Application">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
+	<script type="text/javascript" src="js/webxr.js"></script>
+	<script type="text/javascript" src="js/joystick.js"></script>
+	<script type="text/javascript" src="js/camera-cube-env.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body onload="init();">
+	<script>
+
+		AFRAME.registerComponent('model-color', {
+			schema: {
+				color: { type: 'color', default: '#AAA' }
+			},
+
+			update: function () {
+				this.changeColor(this.data.color);
+			},
+
+			changeColor: function (color) {
+				var object3D = this.el.object3D;
+				var newColor = new AFRAME.THREE.Color(color);
+				object3D.traverse((node) => {
+					if (node.isMesh && node.name == 'Body_odi_CARPAINT_Red_0') {
+						if (node.material.map) {
+							node.material.map = null;
+						}
+						node.material.color = newColor;
+					}
+					// if (node.isMesh && node.name == 'Body_odi_CARPAINT_Red_0') {
+					// 	if (node.material.map) {
+					// 		node.material.map = null;
+					// 	}
+					// 	node.material.color = newColor;
+					// }
+				});
+			}
+		});
+		AFRAME.registerComponent('follow-object', {
+			schema: {
+				target: { type: 'selector' },
+				distance: { type: 'vec3' },  // offset from target position
+			},
+
+			tick: function () {
+				if (!this.data.target || !this.data.target.object3D) {
+					return;
+				}
+
+				var object3D = this.data.target.object3D;
+				var targetPosition = new THREE.Vector3();
+
+				// Traverse the model hierarchy to find the named object.
+				object3D.traverse((node) => {
+					if (node.name === 'pov_cam') {
+						// Update the position of the camera to match the object, with offset.
+						targetPosition.copy(node.getWorldPosition(new THREE.Vector3()));
+						targetPosition.add(this.data.distance);
+						this.el.object3D.position.lerp(targetPosition, 1);  // smooth movement
+
+						
+					}
+				});
+			}
+		});
+
+
+		window.onload = function () {  // Added this line
+
+			var colorOptions = document.querySelectorAll('.color-option');
+			var car = document.querySelector('#merc');
+
+			car.addEventListener('model-loaded', function () {
+				colorOptions.forEach(function (button) {
+					button.addEventListener('click', function () {
+						var color = this.dataset.color;
+						car.setAttribute('model-color', 'color', color);
+					});
+				});
+			});
+
+
+
+
+		};  // And this line
+
+		document.addEventListener('DOMContentLoaded', function () {
+			var models = document.querySelectorAll('a-gltf-model');
+			var loader = document.querySelector('#loading-screen');
+			var modelsLoaded = 0;
+
+			// fade in loading screen
+			loader.style.opacity = '1';
+
+			models.forEach(function (model) {
+				model.addEventListener('model-loaded', function () {
+					modelsLoaded++;
+					if (modelsLoaded === models.length) {
+						// all models have loaded
+						loader.style.opacity = '0';
+					}
+				});
+			});
+
+			loader.addEventListener('transitionend', function () {
+				if (loader.style.opacity == '0') {
+					loader.style.display = 'none';
+				}
+			});
+
+			var switchButton = document.querySelector('#switch-button');
+			var scene1 = document.querySelector('#scene1');
+			var scene2 = document.querySelector('#scene2');
+
+			var camera1 = document.querySelector('#camera_1');
+			var camera2 = document.querySelector('#camera_2');
+
+			switchButton.addEventListener('click', function () {
+				if (scene1.style.display === 'none') {
+					scene1.style.display = 'block';
+					scene2.style.display = 'none';
+
+					camera1.setAttribute('camera', 'active', true);
+					camera2.setAttribute('camera', 'active', false);
+				} else {
+					scene1.style.display = 'none';
+					scene2.style.display = 'block';
+
+					camera1.setAttribute('camera', 'active', false);
+					camera2.setAttribute('camera', 'active', true);
+				}
+			});
+		});
+
+
+
+
+	</script>
+
+	<div id="loading-screen">
+		<h1>Loading...</h1>
+		<!-- You can put any content you want in the loading screen -->
+	</div>
+
+
+	<!-- Configurator  -->
+
+	<div class="scene-wrapper">
+		<div class="color-options">
+			<img id="customize" src="/resources/CustomWhite.png" alt="Customize" />
+			<button class="color-option" data-color="#F00"></button>
+			<button class="color-option" data-color="#0F0"></button>
+			<button class="color-option" data-color="#00F"></button>
+			<button id="switch-button">Test Drive</button>
+		</div>
+
+
+
+		<a-scene id="scene1" shadow="type: pcfsoft; autoUpdate: true;"
+			renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;">
+			<!-- Assets -->
+			<a-assets>
+
+				<a-asset-item id="Baked_Baked_0" src="./assets/Baked_Baked_0.gltf"></a-asset-item>
+				<a-assets-item id="logo" src="/assets/merc.glb"></a-assets-item>
+				<a-asset-item id="leg_Leg_0" src="./assets/leg_Leg_0.gltf"></a-asset-item>
+				<a-asset-item id="leg_Leg_0.001" src="./assets/leg_Leg_0.001.gltf"></a-asset-item>
+				<a-asset-item id="Material2.001" src="./assets/Material2.001.gltf"></a-asset-item>
+
+				<a-asset-item id="Modern Chair" src="./assets/Modern Chair.gltf"></a-asset-item>
+				<a-asset-item id="Modern Chair.001" src="./assets/Modern Chair.001.gltf"></a-asset-item>
+				<a-asset-item id="Modern Chair.002" src="./assets/Modern Chair.002.gltf"></a-asset-item>
+				<a-asset-item id="plant" src="/assets/scene.gltf"></a-asset-item>
+				<a-asset-item id="monstera" src="/assets/monstera.gltf"></a-asset-item>
+				<a-asset-item id="car" src="/assets/futureMerc.gltf"></a-asset-item>
+
+				<img id="sky" src="./resources/sky.jpg" alt="sky" crossorigin="anonymous">
+
+			</a-assets>
+
+			<!-- Entities -->
+
+			<a-gltf-model src="#Baked_Baked_0" scale="1 1.482 1.359" position="-18.295 15.361 1.029" visible=""
+				shadow=""></a-gltf-model>
+			<a-gltf-model src="#leg_Leg_0" scale="" position="-27.101 1.155 -13.441" visible=""
+				shadow=""></a-gltf-model>
+			<a-gltf-model src="#leg_Leg_0.001" scale="" position="-30.479 1.087 -8.293" visible=""
+				shadow=""></a-gltf-model>
+			<a-gltf-model src="#Material2.001" scale="" position="2.313 -0.612 -0.1" visible=""
+				shadow=""></a-gltf-model>
+			<a-gltf-model src="#Modern Chair" scale="" position="-24.022 1.08 24.703" visible=""
+				shadow=""></a-gltf-model>
+			<a-gltf-model src="#Modern Chair.001" scale="" position="-30.066 1.08 21.451" visible=""
+				shadow=""></a-gltf-model>
+			<a-gltf-model src="#Modern Chair.002" scale="" position="-17.626 1.08 21.088" visible=""
+				shadow=""></a-gltf-model>
+			<a-gltf-model src="#plant" scale="2.989 2.979 2.989" position="-31.511 -0.069 -24.648" visible=""
+				shadow=""></a-gltf-model>
+			<a-gltf-model src="#monstera" scale="4.107 4.107 4.117" position="-30.071 -0.269 26.146" visible=""
+				shadow=""></a-gltf-model>
+			<a-gltf-model id="merc" src="#car" scale="0.707 0.707 0.707" position="0.049 0 0.169" visible="" shadow=""
+				rotation="0 -271.886 0" model-color="color: #00F"
+				animation="property: rotation; to: 0 -360 0; from: 0 0 0; easing: linear; loop: true; dur: 100000"></a-gltf-model>
+			<a-circle geometry="" material="color: #828282" rotation="-90 -271.886 0" position="0.641 0 -0.977"
+				scale="13.644 13.644 13.644"
+				animation="property: rotation; to: -90 -360 0; from: -90 0 0; easing: linear; loop: true; dur: 100000"></a-circle>
+
+			<!-- Camera -->
+			<a-entity id="player" position="-36 4 0" rotation="0.6 -86.862 0">
+				<a-entity id="camera_1" camera="active: true; fov: 35" position="0 2 0" look-controls>
+				</a-entity>
+				<a-entity id="leftHand" oculus-touch-controls="hand: left" vive-controls="hand: left"></a-entity>
+				<a-entity id="rightHand" laser-controls oculus-touch-controls="hand: right" vive-controls="hand: right"
+					raycaster="far: 10.0; interval: 1500.0; objects: .clickable,.links"></a-entity>
+			</a-entity>
+
+			<!-- Sky -->
+			<a-sky src="#sky" material="" geometry="" rotation="0 90 0"></a-sky>
+		</a-scene>
+
+		<!-- Second Scene  -->
+
+		<a-scene id="scene2" style="display: none" shadow="type: pcfsoft; autoUpdate: true;"
+			renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;">
+
+			<a-assets>
+				<a-assets-item id="city" src="/assets/testdrive_city.gltf"></a-assets-item>
+				<a-assets-item id="merc-test" src="/assets/testdrive_car.gltf"></a-assets-item>
+
+			</a-assets>
+			<!-- Your hidden space's entities go here -->
+			<a-entity id="test-drive">
+				<a-camera id="camera_2" position="1 1 1" rotation="1 1 1" camera="fov: 35" follow-object="target: #testCar; distance: 0 0 0" data-aframe-inspector-original-camera="">
+				</a-camera>
+				<a-entity id="leftHand" oculus-touch-controls="hand: left" vive-controls="hand: left"></a-entity>
+				<a-entity id="rightHand" laser-controls oculus-touch-controls="hand: right" vive-controls="hand: right"
+					raycaster="far: 10.0; interval: 1500.0; objects: .clickable,.links"></a-entity>
+			</a-entity>
+			<a-gltf-model src="#city" animation-mixer></a-gltf-model>
+			<a-gltf-model id="testCar" src="#merc-test" animation-mixer>
+
+
+			</a-gltf-model>
+
+		</a-scene>
+	</div>
+</body>
+
+</html>
+<!-- Generated automatically by AFRAME Exporter for Blender - https://silverslade.itch.io/a-frame-blender-exporter -->
