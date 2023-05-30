@@ -70,8 +70,8 @@
 						targetPosition.copy(node.getWorldPosition(new THREE.Vector3()));
 						targetPosition.add(this.data.distance);
 						this.el.object3D.position.lerp(targetPosition, 1);  // smooth movement
-						
-						
+
+
 					}
 				});
 			}
@@ -98,28 +98,6 @@
 		};  // And this line
 
 		document.addEventListener('DOMContentLoaded', function () {
-			var models = document.querySelectorAll('a-gltf-model');
-			var loader = document.querySelector('#loading-screen');
-			var modelsLoaded = 0;
-
-			// fade in loading screen
-			loader.style.opacity = '1';
-
-			models.forEach(function (model) {
-				model.addEventListener('model-loaded', function () {
-					modelsLoaded++;
-					if (modelsLoaded === models.length) {
-						// all models have loaded
-						loader.style.opacity = '0';
-					}
-				});
-			});
-
-			loader.addEventListener('transitionend', function () {
-				if (loader.style.opacity == '0') {
-					loader.style.display = 'none';
-				}
-			});
 
 			var switchButton = document.querySelector('#switch-button');
 			var scene1 = document.querySelector('#scene1');
@@ -143,16 +121,53 @@
 					camera2.setAttribute('camera', 'active', true);
 				}
 			});
+
+			var models = document.querySelectorAll('a-gltf-model');
+			var loader = document.querySelector('#loading-screen');
+			var progressBar = document.querySelector('#progress-bar');
+			var modelsLoaded = 0;
+
+			// fade in loading screen
+			loader.style.opacity = '1';
+
+			models.forEach(function (model) {
+				model.addEventListener('model-loaded', function () {
+					modelsLoaded++;
+					var progress = (modelsLoaded / models.length) * 100;
+					progressBar.style.width = progress + '%';
+
+					if (modelsLoaded === models.length) {
+						// all models have loaded
+						loader.style.opacity = '0';
+					}
+				});
+			});
+
+			loader.addEventListener('transitionend', function () {
+				if (loader.style.opacity == '0') {
+					loader.style.display = 'none';
+				}
+			});
 		});
-
-
 
 
 	</script>
 
 	<div id="loading-screen">
-		<h1>Loading...</h1>
-		<!-- You can put any content you want in the loading screen -->
+		<div id="loading-screen-container">
+			<div id="greeting">
+				<img id="logo" src="/resources/merc-logo.png" />
+				<p>Welcome to the Mercedes-Benz Virtual Showroom. Get ready for an immersive Mercedes-Benz experience.
+				</p>
+			</div>
+			<div id="progress-bar-container">
+				<div id="progress-bar"></div>
+			</div>
+			<div id="made-by">
+				<p>Experience by:</p>
+				<img id="tdc" src="/resources/tdc.png" />
+			</div>
+		</div>
 	</div>
 
 
@@ -245,7 +260,8 @@
 			<a-sky src="#sky" material="" geometry="" rotation="0 90 0" scale="2 2 2"></a-sky>
 			<!-- Your hidden space's entities go here -->
 			<a-entity id="test-drive">
-				<a-camera id="camera_2" position="1 1 1" rotation="1 1 1" camera="fov: 35" follow-object="target: #testCar; distance: 0 0 0" data-aframe-inspector-original-camera="">
+				<a-camera id="camera_2" position="1 1 1" rotation="1 1 1" camera="fov: 35"
+					follow-object="target: #testCar; distance: 0 0 0" data-aframe-inspector-original-camera="">
 				</a-camera>
 				<a-entity id="leftHand" oculus-touch-controls="hand: left" vive-controls="hand: left"></a-entity>
 				<a-entity id="rightHand" laser-controls oculus-touch-controls="hand: right" vive-controls="hand: right"
