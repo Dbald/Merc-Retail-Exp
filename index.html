@@ -80,7 +80,7 @@
 
 		window.onload = function () {  // Added this line
 
-			var colorOptions = document.querySelectorAll('.color-option');
+			const colorOptions = document.querySelectorAll('.color-option');
 			var car = document.querySelector('#merc');
 
 			car.addEventListener('model-loaded', function () {
@@ -100,6 +100,7 @@
 		document.addEventListener('DOMContentLoaded', function () {
 
 			var switchButton = document.querySelector('#switch-button');
+			
 			var scene1 = document.querySelector('#scene1');
 			var scene2 = document.querySelector('#scene2');
 
@@ -113,12 +114,22 @@
 
 					camera1.setAttribute('camera', 'active', true);
 					camera2.setAttribute('camera', 'active', false);
+
+					switchButton.textContent = 'RIDE';
+
+					// Show color options
+					colorOptions.style.display = 'block';
 				} else {
 					scene1.style.display = 'none';
 					scene2.style.display = 'block';
 
 					camera1.setAttribute('camera', 'active', false);
 					camera2.setAttribute('camera', 'active', true);
+
+					switchButton.textContent = 'BACK';
+
+					// Hide color options
+					colorOptions.style.display = 'none';
 				}
 			});
 
@@ -175,17 +186,23 @@
 
 	<div class="scene-wrapper">
 		<div class="color-options">
-			<img id="customize" src="/resources/CustomWhite.png" alt="Customize" />
+			<!-- <img id="customize" src="/resources/CustomWhite.png" alt="Customize" /> -->
 			<button class="color-option" data-color="#F00"></button>
 			<button class="color-option" data-color="#0F0"></button>
 			<button class="color-option" data-color="#00F"></button>
-			<button id="switch-button">Test Drive</button>
+			<button class="color-option" data-color="#FFF"></button>
+			<button class="color-option" data-color="#000"></button>
+			<button class="color-option" data-color="#d3b62c"></button>
+			
 		</div>
+		
+			<button id="switch-button">RIDE</button>
+		
 
 
 
 		<a-scene id="scene1" shadow="type: pcfsoft; autoUpdate: true;"
-			renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;">
+			renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;" vr-mode-ui="enabled: false">
 			<!-- Assets -->
 			<a-assets>
 
