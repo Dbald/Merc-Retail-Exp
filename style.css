@@ -40,6 +40,17 @@
   visibility: visible !important;
 }
 
+.info-bubble {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  color: #000;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+}
+
+
 #logo {
   width: 25%;
   max-width: 300px;
@@ -113,21 +124,21 @@
   overflow: hidden;
   top: 0;
   left: 0;
-  width: 10px; /* the width of the tab */
-  height: 50%;
+  width: 55px; /* the width of the tab */
+  height: 330px;
   background-color: rgba(0, 0, 0, 0.5);
   transition: width 0.3s ease;
   overflow-x: hidden;
 }
 
 .color-options:hover {
-  width: 60px; /* the width of the expanded sidebar */
+  width: 55px; /* the width of the expanded sidebar */
 }
 
 .color-options button {
   display: block;
   width: 100%;
-  height: 60px;
+  height: 55px;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -171,8 +182,8 @@
   font-family: 'Times New Roman', Times, serif;
   padding: 10px 20px;
   border: none;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #FFF;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: #000;
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.3s ease;
@@ -181,6 +192,7 @@
 
 #switch-button:hover {
   background-color: rgba(0, 0, 0, 0.8);
+  color: white;
 }
 
 /* Animations */
@@ -213,4 +225,17 @@
 @-ms-keyframes fadeIn {
   0% {opacity:0;}
   100% {opacity:1;}
+}
+
+/* Media Query */
+@media screen and (max-width: 600px) {
+  #color-options {
+    width: 60px;
+    height: 50%;
+      /* add other styles for smaller screens here */
+  }
+
+  #color-options:hover {
+    transform: none;
+  }
 }

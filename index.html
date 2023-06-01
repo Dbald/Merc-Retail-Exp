@@ -100,7 +100,7 @@
 		document.addEventListener('DOMContentLoaded', function () {
 
 			var switchButton = document.querySelector('#switch-button');
-			
+
 			var scene1 = document.querySelector('#scene1');
 			var scene2 = document.querySelector('#scene2');
 
@@ -115,7 +115,7 @@
 					camera1.setAttribute('camera', 'active', true);
 					camera2.setAttribute('camera', 'active', false);
 
-					switchButton.textContent = 'RIDE';
+					switchButton.textContent = 'Take a Ride';
 
 					// Show color options
 					colorOptions.style.display = 'block';
@@ -126,7 +126,7 @@
 					camera1.setAttribute('camera', 'active', false);
 					camera2.setAttribute('camera', 'active', true);
 
-					switchButton.textContent = 'BACK';
+					switchButton.textContent = 'Go Back';
 
 					// Hide color options
 					colorOptions.style.display = 'none';
@@ -159,6 +159,18 @@
 					loader.style.display = 'none';
 				}
 			});
+
+			var car = document.querySelector('#merc');
+			var carInfo = document.querySelector('#carInfo');
+
+			car.addEventListener('mouseenter', function () {
+				carInfo.style.display = 'block';
+			});
+
+			car.addEventListener('mouseleave', function () {
+				carInfo.style.display = 'none';
+			});
+
 		});
 
 
@@ -193,16 +205,17 @@
 			<button class="color-option" data-color="#FFF"></button>
 			<button class="color-option" data-color="#000"></button>
 			<button class="color-option" data-color="#d3b62c"></button>
-			
+			<button id="switch-button">Take a Ride</button>
 		</div>
-		
-			<button id="switch-button">RIDE</button>
-		
+
+
+
 
 
 
 		<a-scene id="scene1" shadow="type: pcfsoft; autoUpdate: true;"
-			renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;" vr-mode-ui="enabled: false">
+			renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;"
+			vr-mode-ui="enabled: false">
 			<!-- Assets -->
 			<a-assets>
 
@@ -245,7 +258,11 @@
 				shadow=""></a-gltf-model>
 			<a-gltf-model id="merc" src="#car" scale="0.707 0.707 0.707" position="0.049 0 0.169" visible="" shadow=""
 				rotation="0 -271.886 0" model-color="color: #00F"
-				animation="property: rotation; to: 0 -360 0; from: 0 0 0; easing: linear; loop: true; dur: 100000"></a-gltf-model>
+				animation="property: rotation; to: 0 -360 0; from: 0 0 0; easing: linear; loop: true; dur: 100000">
+				<div class="info-bubble" id="carInfo">
+					<p>This is a Mercedes-Benz car. Hover for more info.</p>
+				</div>
+			</a-gltf-model>
 			<a-circle geometry="" material="color: #828282" rotation="-90 -271.886 0" position="0.641 0 -0.977"
 				scale="13.644 13.644 13.644"
 				animation="property: rotation; to: -90 -360 0; from: -90 0 0; easing: linear; loop: true; dur: 100000"></a-circle>
@@ -266,7 +283,8 @@
 		<!-- Second Scene  -->
 
 		<a-scene id="scene2" style="display: none" shadow="type: pcfsoft; autoUpdate: true;"
-			renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;">
+			renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;"
+			vr-mode-ui="enabled: false">
 
 			<a-assets>
 				<a-assets-item id="city" src="/assets/testdrive_city.gltf"></a-assets-item>
