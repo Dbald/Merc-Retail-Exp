@@ -12,7 +12,7 @@
             "name" : "Scene",
             "nodes" : [
                 3,
-                199
+                197
             ]
         }
     ],
@@ -66,14 +66,9 @@
                 0.7071068286895752
             ],
             "scale" : [
-                0.08115247637033463,
-                0.08115247637033463,
-                0.08115247637033463
-            ],
-            "translation" : [
-                -26.179521560668945,
-                0.16740989685058594,
-                -0.512239396572113
+                0.0655188336968422,
+                0.0655188336968422,
+                0.0655188336968422
             ]
         },
         {
@@ -104,41 +99,6 @@
             ]
         },
         {
-            "camera" : 0,
-            "name" : "pov_cam_Orientation",
-            "rotation" : [
-                -0.7071067690849304,
-                0,
-                0,
-                0.7071067690849304
-            ]
-        },
-        {
-            "children" : [
-                7
-            ],
-            "name" : "pov_cam",
-            "rotation" : [
-                -0.009872554801404476,
-                0.7069515585899353,
-                0.01480838656425476,
-                0.7070380449295044
-            ],
-            "scale" : [
-                0.1526278853416443,
-                0.1526278406381607,
-                0.1526278406381607
-            ],
-            "translation" : [
-                -0.9908570051193237,
-                0.8451566100120544,
-                0.25974035263061523
-            ]
-        },
-        {
-            "children" : [
-                8
-            ],
             "mesh" : 3,
             "name" : "Body_odi_CARPAINT_Red_0",
             "translation" : [
@@ -170,9 +130,9 @@
                 4,
                 5,
                 6,
-                9,
-                10,
-                11
+                7,
+                8,
+                9
             ],
             "name" : "Body",
             "rotation" : [
@@ -203,7 +163,7 @@
         },
         {
             "children" : [
-                13
+                11
             ],
             "name" : "CenterPiece",
             "rotation" : [
@@ -243,7 +203,7 @@
         },
         {
             "children" : [
-                16
+                14
             ],
             "name" : "TopLogo",
             "rotation" : [
@@ -260,8 +220,8 @@
         },
         {
             "children" : [
-                15,
-                17
+                13,
+                15
             ],
             "name" : "FronSeatCenterPiece",
             "rotation" : [
@@ -292,7 +252,7 @@
         },
         {
             "children" : [
-                19
+                17
             ],
             "name" : "FronSeatHeadrest",
             "rotation" : [
@@ -323,7 +283,7 @@
         },
         {
             "children" : [
-                21
+                19
             ],
             "name" : "FronSeatLower",
             "rotation" : [
@@ -363,8 +323,8 @@
         },
         {
             "children" : [
-                23,
-                24
+                21,
+                22
             ],
             "name" : "FronSeatTrimandBase",
             "rotation" : [
@@ -395,7 +355,7 @@
         },
         {
             "children" : [
-                26
+                24
             ],
             "name" : "FronSeatUpper",
             "rotation" : [
@@ -421,7 +381,7 @@
         },
         {
             "children" : [
-                28
+                26
             ],
             "name" : "Front Fridge",
             "rotation" : [
@@ -501,13 +461,13 @@
         },
         {
             "children" : [
+                28,
+                29,
                 30,
                 31,
                 32,
                 33,
-                34,
-                35,
-                36
+                34
             ],
             "name" : "Front L Rim",
             "rotation" : [
@@ -542,9 +502,9 @@
         },
         {
             "children" : [
-                37,
-                38,
-                39
+                35,
+                36,
+                37
             ],
             "name" : "Front L Tire .001",
             "rotation" : [
@@ -668,6 +628,8 @@
         },
         {
             "children" : [
+                39,
+                40,
                 41,
                 42,
                 43,
@@ -675,9 +637,7 @@
                 45,
                 46,
                 47,
-                48,
-                49,
-                50
+                48
             ],
             "name" : "Front R Rim",
             "rotation" : [
@@ -712,9 +672,9 @@
         },
         {
             "children" : [
-                51,
-                52,
-                53
+                49,
+                50,
+                51
             ],
             "name" : "Front R Tire ",
             "rotation" : [
@@ -763,7 +723,7 @@
         },
         {
             "children" : [
-                57
+                55
             ],
             "name" : "Star"
         },
@@ -796,9 +756,9 @@
         },
         {
             "children" : [
-                59,
-                60,
-                61
+                57,
+                58,
+                59
             ],
             "name" : "TaillightStar",
             "translation" : [
@@ -818,7 +778,7 @@
         },
         {
             "children" : [
-                63
+                61
             ],
             "name" : "TaillightStarGlassCover",
             "translation" : [
@@ -829,11 +789,11 @@
         },
         {
             "children" : [
-                55,
+                53,
+                54,
                 56,
-                58,
-                62,
-                64
+                60,
+                62
             ],
             "name" : "FrontLogo",
             "scale" : [
@@ -858,7 +818,7 @@
         },
         {
             "children" : [
-                66
+                64
             ],
             "name" : "FrontSlots",
             "rotation" : [
@@ -889,7 +849,7 @@
         },
         {
             "children" : [
-                68
+                66
             ],
             "name" : "FrontSlots.001",
             "rotation" : [
@@ -920,7 +880,7 @@
         },
         {
             "children" : [
-                70
+                68
             ],
             "name" : "GlassRoofFront",
             "rotation" : [
@@ -951,7 +911,7 @@
         },
         {
             "children" : [
-                72
+                70
             ],
             "name" : "GlassRoofRear",
             "rotation" : [
@@ -982,7 +942,7 @@
         },
         {
             "children" : [
-                74
+                72
             ],
             "name" : "Grille Light",
             "rotation" : [
@@ -1032,7 +992,7 @@
         },
         {
             "children" : [
-                77
+                75
             ],
             "name" : "Headlight Cover",
             "rotation" : [
@@ -1063,7 +1023,7 @@
         },
         {
             "children" : [
-                79
+                77
             ],
             "name" : "Headlight Horizontal Bar",
             "rotation" : [
@@ -1094,7 +1054,7 @@
         },
         {
             "children" : [
-                81
+                79
             ],
             "name" : "Headlight Inner Pocket",
             "rotation" : [
@@ -1134,8 +1094,8 @@
         },
         {
             "children" : [
-                83,
-                84
+                81,
+                82
             ],
             "name" : "Headlight Inner Pocket Bowl",
             "rotation" : [
@@ -1166,7 +1126,7 @@
         },
         {
             "children" : [
-                86
+                84
             ],
             "name" : "Headlight Inner Pocket.002",
             "rotation" : [
@@ -1206,8 +1166,8 @@
         },
         {
             "children" : [
-                88,
-                89
+                86,
+                87
             ],
             "name" : "HeadLiner",
             "rotation" : [
@@ -1238,7 +1198,7 @@
         },
         {
             "children" : [
-                91
+                89
             ],
             "name" : "HoodDecor",
             "rotation" : [
@@ -1269,7 +1229,7 @@
         },
         {
             "children" : [
-                93
+                91
             ],
             "name" : "HoodSurface",
             "rotation" : [
@@ -1300,7 +1260,7 @@
         },
         {
             "children" : [
-                95
+                93
             ],
             "name" : "Interior Floor",
             "rotation" : [
@@ -1331,7 +1291,7 @@
         },
         {
             "children" : [
-                97
+                95
             ],
             "name" : "Interior Floor Bronze",
             "rotation" : [
@@ -1362,7 +1322,7 @@
         },
         {
             "children" : [
-                99
+                97
             ],
             "name" : "Interior Ridge Rear Center",
             "rotation" : [
@@ -1438,12 +1398,12 @@
         },
         {
             "children" : [
+                99,
+                100,
                 101,
                 102,
                 103,
-                104,
-                105,
-                106
+                104
             ],
             "name" : "IP Column",
             "rotation" : [
@@ -1477,9 +1437,9 @@
         },
         {
             "children" : [
-                108,
-                109,
-                110
+                106,
+                107,
+                108
             ],
             "name" : "NewIP",
             "rotation" : [
@@ -1505,7 +1465,7 @@
         },
         {
             "children" : [
-                112
+                110
             ],
             "name" : "Plane.002",
             "rotation" : [
@@ -1536,7 +1496,7 @@
         },
         {
             "children" : [
-                114
+                112
             ],
             "name" : "Pocket",
             "rotation" : [
@@ -1567,7 +1527,7 @@
         },
         {
             "children" : [
-                116
+                114
             ],
             "name" : "Point Light",
             "rotation" : [
@@ -1616,9 +1576,9 @@
         },
         {
             "children" : [
-                118,
-                119,
-                120
+                116,
+                117,
+                118
             ],
             "name" : "Point Light Base",
             "rotation" : [
@@ -1667,9 +1627,9 @@
         },
         {
             "children" : [
-                122,
-                123,
-                124
+                120,
+                121,
+                122
             ],
             "name" : "Point Light Base.001",
             "rotation" : [
@@ -1718,9 +1678,9 @@
         },
         {
             "children" : [
-                126,
-                127,
-                128
+                124,
+                125,
+                126
             ],
             "name" : "Point Light Base.002",
             "rotation" : [
@@ -1760,8 +1720,8 @@
         },
         {
             "children" : [
-                130,
-                131
+                128,
+                129
             ],
             "name" : "Point Light Base.003",
             "rotation" : [
@@ -1801,8 +1761,8 @@
         },
         {
             "children" : [
-                133,
-                134
+                131,
+                132
             ],
             "name" : "Point Light Base.004",
             "rotation" : [
@@ -1842,8 +1802,8 @@
         },
         {
             "children" : [
-                136,
-                137
+                134,
+                135
             ],
             "name" : "Point Light Base.005",
             "rotation" : [
@@ -1874,7 +1834,7 @@
         },
         {
             "children" : [
-                139
+                137
             ],
             "name" : "Point Light.001",
             "rotation" : [
@@ -1905,7 +1865,7 @@
         },
         {
             "children" : [
-                141
+                139
             ],
             "name" : "Point Light.002",
             "rotation" : [
@@ -1945,8 +1905,8 @@
         },
         {
             "children" : [
-                143,
-                144
+                141,
+                142
             ],
             "name" : "Rear Headrest.001",
             "rotation" : [
@@ -2031,13 +1991,13 @@
         },
         {
             "children" : [
+                144,
+                145,
                 146,
                 147,
                 148,
                 149,
-                150,
-                151,
-                152
+                150
             ],
             "name" : "Rear L Rim",
             "rotation" : [
@@ -2072,9 +2032,9 @@
         },
         {
             "children" : [
-                153,
-                154,
-                155
+                151,
+                152,
+                153
             ],
             "name" : "Rear L Tire ",
             "rotation" : [
@@ -2132,10 +2092,10 @@
         },
         {
             "children" : [
+                155,
+                156,
                 157,
-                158,
-                159,
-                160
+                158
             ],
             "name" : "Rear R Rim",
             "rotation" : [
@@ -2170,9 +2130,9 @@
         },
         {
             "children" : [
-                161,
-                162,
-                163
+                159,
+                160,
+                161
             ],
             "name" : "Rear R Tire",
             "rotation" : [
@@ -2203,7 +2163,7 @@
         },
         {
             "children" : [
-                165
+                163
             ],
             "name" : "Rear Seat Lower",
             "rotation" : [
@@ -2234,7 +2194,7 @@
         },
         {
             "children" : [
-                167
+                165
             ],
             "name" : "Rear Seat Lower Bracket",
             "rotation" : [
@@ -2265,7 +2225,7 @@
         },
         {
             "children" : [
-                169
+                167
             ],
             "name" : "Rear Seat Lower Bracket.001",
             "rotation" : [
@@ -2305,8 +2265,8 @@
         },
         {
             "children" : [
-                171,
-                172
+                169,
+                170
             ],
             "name" : "Rear Seat Lower.001",
             "rotation" : [
@@ -2337,7 +2297,7 @@
         },
         {
             "children" : [
-                174
+                172
             ],
             "name" : "Rear Seat Upper",
             "rotation" : [
@@ -2368,7 +2328,7 @@
         },
         {
             "children" : [
-                176
+                174
             ],
             "name" : "Rear Seat Upper Bracket",
             "rotation" : [
@@ -2426,10 +2386,10 @@
         },
         {
             "children" : [
+                176,
+                177,
                 178,
-                179,
-                180,
-                181
+                179
             ],
             "name" : "Rear Seat Upper Middle",
             "rotation" : [
@@ -2469,14 +2429,14 @@
         },
         {
             "children" : [
-                184
+                182
             ],
             "name" : "Star.001"
         },
         {
             "children" : [
-                183,
-                185
+                181,
+                183
             ],
             "name" : "RearLogo",
             "rotation" : [
@@ -2525,9 +2485,9 @@
         },
         {
             "children" : [
-                187,
-                188,
-                189
+                185,
+                186,
+                187
             ],
             "name" : "SideVentTrim",
             "rotation" : [
@@ -2558,7 +2518,7 @@
         },
         {
             "children" : [
-                191
+                189
             ],
             "name" : "Storage Open",
             "rotation" : [
@@ -2589,7 +2549,7 @@
         },
         {
             "children" : [
-                193
+                191
             ],
             "name" : "TaillightPocket",
             "rotation" : [
@@ -2620,7 +2580,7 @@
         },
         {
             "children" : [
-                195
+                193
             ],
             "name" : "Window center trim",
             "rotation" : [
@@ -2642,68 +2602,68 @@
         },
         {
             "children" : [
+                10,
                 12,
-                14,
+                16,
                 18,
                 20,
-                22,
+                23,
                 25,
                 27,
-                29,
-                40,
-                54,
+                38,
+                52,
+                63,
                 65,
                 67,
                 69,
                 71,
                 73,
-                75,
+                74,
                 76,
                 78,
                 80,
-                82,
+                83,
                 85,
-                87,
+                88,
                 90,
                 92,
                 94,
                 96,
                 98,
-                100,
-                107,
+                105,
+                109,
                 111,
                 113,
                 115,
-                117,
-                121,
-                125,
-                129,
-                132,
-                135,
+                119,
+                123,
+                127,
+                130,
+                133,
+                136,
                 138,
                 140,
-                142,
-                145,
-                156,
+                143,
+                154,
+                162,
                 164,
                 166,
                 168,
-                170,
+                171,
                 173,
                 175,
-                177,
-                182,
-                186,
+                180,
+                184,
+                188,
                 190,
                 192,
-                194,
-                196
+                194
             ],
             "name" : "RootNode.001"
         },
         {
             "children" : [
-                197
+                195
             ],
             "name" : "0818SketchFab.fbx.001",
             "rotation" : [
@@ -2715,7 +2675,7 @@
         },
         {
             "children" : [
-                198
+                196
             ],
             "name" : "Sketchfab_model.001",
             "rotation" : [
@@ -2725,114 +2685,9 @@
                 0.7071068286895752
             ],
             "scale" : [
-                0.08115247637033463,
-                0.08115247637033463,
-                0.08115247637033463
-            ],
-            "translation" : [
-                -26.179521560668945,
-                0.16740989685058594,
-                -0.512239396572113
-            ]
-        }
-    ],
-    "cameras" : [
-        {
-            "name" : "Camera",
-            "perspective" : {
-                "aspectRatio" : 1.7777777777777777,
-                "yfov" : 0.39959652046304894,
-                "zfar" : 1000,
-                "znear" : 0.10000000149011612
-            },
-            "type" : "perspective"
-        }
-    ],
-    "animations" : [
-        {
-            "channels" : [
-                {
-                    "sampler" : 0,
-                    "target" : {
-                        "node" : 3,
-                        "path" : "translation"
-                    }
-                },
-                {
-                    "sampler" : 1,
-                    "target" : {
-                        "node" : 3,
-                        "path" : "rotation"
-                    }
-                },
-                {
-                    "sampler" : 2,
-                    "target" : {
-                        "node" : 3,
-                        "path" : "scale"
-                    }
-                }
-            ],
-            "name" : "Sketchfab_modelAction",
-            "samplers" : [
-                {
-                    "input" : 542,
-                    "interpolation" : "LINEAR",
-                    "output" : 543
-                },
-                {
-                    "input" : 542,
-                    "interpolation" : "LINEAR",
-                    "output" : 544
-                },
-                {
-                    "input" : 545,
-                    "interpolation" : "LINEAR",
-                    "output" : 546
-                }
-            ]
-        },
-        {
-            "channels" : [
-                {
-                    "sampler" : 0,
-                    "target" : {
-                        "node" : 199,
-                        "path" : "translation"
-                    }
-                },
-                {
-                    "sampler" : 1,
-                    "target" : {
-                        "node" : 199,
-                        "path" : "rotation"
-                    }
-                },
-                {
-                    "sampler" : 2,
-                    "target" : {
-                        "node" : 199,
-                        "path" : "scale"
-                    }
-                }
-            ],
-            "name" : "Sketchfab_model.001Action",
-            "samplers" : [
-                {
-                    "input" : 542,
-                    "interpolation" : "LINEAR",
-                    "output" : 547
-                },
-                {
-                    "input" : 542,
-                    "interpolation" : "LINEAR",
-                    "output" : 548
-                },
-                {
-                    "input" : 545,
-                    "interpolation" : "LINEAR",
-                    "output" : 549
-                }
+                0.0655188336968422,
+                0.0655188336968422,
+                0.0655188336968422
             ]
         }
     ],
@@ -3176,20 +3031,6 @@
                 ],
                 "metallicFactor" : 0,
                 "roughnessFactor" : 0.8405275344848633
-            }
-        },
-        {
-            "doubleSided" : true,
-            "name" : "Interior",
-            "pbrMetallicRoughness" : {
-                "baseColorFactor" : [
-                    0.35904499888420105,
-                    0.33333998918533325,
-                    0.3121890127658844,
-                    1
-                ],
-                "metallicFactor" : 0,
-                "roughnessFactor" : 0.9245824217796326
             }
         },
         {
@@ -4239,7 +4080,7 @@
                         "TEXCOORD_1" : 274
                     },
                     "indices" : 275,
-                    "material" : 23
+                    "material" : 6
                 }
             ]
         },
@@ -4284,7 +4125,7 @@
                         "TEXCOORD_1" : 289
                     },
                     "indices" : 290,
-                    "material" : 24
+                    "material" : 23
                 }
             ]
         },
@@ -4298,7 +4139,7 @@
                         "TEXCOORD_0" : 293
                     },
                     "indices" : 294,
-                    "material" : 25
+                    "material" : 24
                 }
             ]
         },
@@ -4312,7 +4153,7 @@
                         "TEXCOORD_0" : 297
                     },
                     "indices" : 298,
-                    "material" : 26
+                    "material" : 25
                 }
             ]
         },
@@ -4369,7 +4210,7 @@
                         "TEXCOORD_0" : 314
                     },
                     "indices" : 315,
-                    "material" : 27
+                    "material" : 26
                 }
             ]
         },
@@ -4383,7 +4224,7 @@
                         "TEXCOORD_0" : 318
                     },
                     "indices" : 319,
-                    "material" : 27
+                    "material" : 26
                 }
             ]
         },
@@ -4411,7 +4252,7 @@
                         "TEXCOORD_0" : 326
                     },
                     "indices" : 327,
-                    "material" : 28
+                    "material" : 27
                 }
             ]
         },
@@ -4425,7 +4266,7 @@
                         "TEXCOORD_0" : 330
                     },
                     "indices" : 331,
-                    "material" : 27
+                    "material" : 26
                 }
             ]
         },
@@ -4453,7 +4294,7 @@
                         "TEXCOORD_0" : 338
                     },
                     "indices" : 339,
-                    "material" : 28
+                    "material" : 27
                 }
             ]
         },
@@ -4467,7 +4308,7 @@
                         "TEXCOORD_0" : 342
                     },
                     "indices" : 343,
-                    "material" : 27
+                    "material" : 26
                 }
             ]
         },
@@ -4495,7 +4336,7 @@
                         "TEXCOORD_0" : 350
                     },
                     "indices" : 351,
-                    "material" : 28
+                    "material" : 27
                 }
             ]
         },
@@ -4523,7 +4364,7 @@
                         "TEXCOORD_0" : 358
                     },
                     "indices" : 359,
-                    "material" : 28
+                    "material" : 27
                 }
             ]
         },
@@ -4551,7 +4392,7 @@
                         "TEXCOORD_0" : 366
                     },
                     "indices" : 367,
-                    "material" : 28
+                    "material" : 27
                 }
             ]
         },
@@ -4579,7 +4420,7 @@
                         "TEXCOORD_0" : 374
                     },
                     "indices" : 375,
-                    "material" : 28
+                    "material" : 27
                 }
             ]
         },
@@ -4593,7 +4434,7 @@
                         "TEXCOORD_0" : 378
                     },
                     "indices" : 379,
-                    "material" : 27
+                    "material" : 26
                 }
             ]
         },
@@ -4607,7 +4448,7 @@
                         "TEXCOORD_0" : 382
                     },
                     "indices" : 383,
-                    "material" : 27
+                    "material" : 26
                 }
             ]
         },
@@ -4622,7 +4463,7 @@
                         "TEXCOORD_1" : 387
                     },
                     "indices" : 388,
-                    "material" : 9
+                    "material" : 6
                 }
             ]
         },
@@ -4862,7 +4703,7 @@
                         "TEXCOORD_1" : 457
                     },
                     "indices" : 458,
-                    "material" : 29
+                    "material" : 28
                 }
             ]
         },
@@ -4937,7 +4778,7 @@
                         "TEXCOORD_1" : 482
                     },
                     "indices" : 483,
-                    "material" : 9
+                    "material" : 6
                 }
             ]
         },
@@ -4982,7 +4823,7 @@
                         "TEXCOORD_1" : 497
                     },
                     "indices" : 498,
-                    "material" : 30
+                    "material" : 29
                 }
             ]
         },
@@ -5068,7 +4909,7 @@
                         "TEXCOORD_0" : 523
                     },
                     "indices" : 524,
-                    "material" : 31
+                    "material" : 30
                 }
             ]
         },
@@ -5111,7 +4952,7 @@
                         "TEXCOORD_1" : 536
                     },
                     "indices" : 537,
-                    "material" : 32
+                    "material" : 31
                 }
             ]
         },
@@ -9642,66 +9483,6 @@
             "componentType" : 5123,
             "count" : 1824,
             "type" : "SCALAR"
-        },
-        {
-            "bufferView" : 542,
-            "componentType" : 5126,
-            "count" : 785,
-            "max" : [
-                26.166666666666668
-            ],
-            "min" : [
-                0.03333333333333333
-            ],
-            "type" : "SCALAR"
-        },
-        {
-            "bufferView" : 543,
-            "componentType" : 5126,
-            "count" : 785,
-            "type" : "VEC3"
-        },
-        {
-            "bufferView" : 544,
-            "componentType" : 5126,
-            "count" : 785,
-            "type" : "VEC4"
-        },
-        {
-            "bufferView" : 545,
-            "componentType" : 5126,
-            "count" : 2,
-            "max" : [
-                26.166666666666668
-            ],
-            "min" : [
-                0.03333333333333333
-            ],
-            "type" : "SCALAR"
-        },
-        {
-            "bufferView" : 546,
-            "componentType" : 5126,
-            "count" : 2,
-            "type" : "VEC3"
-        },
-        {
-            "bufferView" : 547,
-            "componentType" : 5126,
-            "count" : 785,
-            "type" : "VEC3"
-        },
-        {
-            "bufferView" : 548,
-            "componentType" : 5126,
-            "count" : 785,
-            "type" : "VEC4"
-        },
-        {
-            "bufferView" : 549,
-            "componentType" : 5126,
-            "count" : 2,
-            "type" : "VEC3"
         }
     ],
     "bufferViews" : [
@@ -12414,51 +12195,11 @@
             "buffer" : 0,
             "byteLength" : 3648,
             "byteOffset" : 46145612
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 3140,
-            "byteOffset" : 46149260
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 9420,
-            "byteOffset" : 46152400
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 12560,
-            "byteOffset" : 46161820
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 8,
-            "byteOffset" : 46174380
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 24,
-            "byteOffset" : 46174388
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 9420,
-            "byteOffset" : 46174412
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 12560,
-            "byteOffset" : 46183832
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 24,
-            "byteOffset" : 46196392
         }
     ],
     "buffers" : [
         {
-            "byteLength" : 46196416,
+            "byteLength" : 46149260,
             "uri" : "testdrive_car.bin"
         }
     ]

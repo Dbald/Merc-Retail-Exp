@@ -21,117 +21,98 @@
 <body onload="init();">
 	<script>
 
-		AFRAME.registerComponent('model-color', {
-			schema: {
-				color: { type: 'color', default: '#AAA' }
-			},
+AFRAME.registerComponent('model-color', {
+    multiple: true,  // allows multiple instances of the component
+    schema: {
+        color: { type: 'color', default: '#AAA' },
+        part: { type: 'string', default: 'Body_odi_CARPAINT_Red_0' }
+    },
 
-			update: function () {
-				this.changeColor(this.data.color);
-			},
+    update: function () {
+        this.changeColor(this.data.color, this.data.part);
+    },
 
-			changeColor: function (color) {
-				var object3D = this.el.object3D;
-				var newColor = new AFRAME.THREE.Color(color);
-				object3D.traverse((node) => {
-					if (node.isMesh && node.name == 'Body_odi_CARPAINT_Red_0') {
-						if (node.material.map) {
-							node.material.map = null;
-						}
-						node.material.color = newColor;
-					}
-					// if (node.isMesh && node.name == 'Body_odi_CARPAINT_Red_0') {
-					// 	if (node.material.map) {
-					// 		node.material.map = null;
-					// 	}
-					// 	node.material.color = newColor;
-					// }
-				});
-			}
-		});
-		AFRAME.registerComponent('follow-object', {
-			schema: {
-				target: { type: 'selector' },
-				distance: { type: 'vec3' },  // offset from target position
-			},
+    changeColor: function (color, part) {
+        var object3D = this.el.object3D;
+        var newColor = new AFRAME.THREE.Color(color);
+        object3D.traverse((node) => {
+            if (node.isMesh && node.name == part) {
+                if (node.material.map) {
+                    node.material.map = null;
+                }
+                node.material.color = newColor;
+            }
+        });
+    }
+});
 
-			tick: function () {
-				if (!this.data.target || !this.data.target.object3D) {
-					return;
-				}
+window.onload = function () {
+    const colorOptionsBody = document.querySelectorAll('.color-option-body');
+    const colorOptionsTrim = document.querySelectorAll('.color-option-trim');
+	const colorOptionsInterior = document.querySelectorAll('.color-option-interior');
+    var car = document.querySelector('#merc');
 
-				var object3D = this.data.target.object3D;
-				var targetPosition = new THREE.Vector3();
-
-				// Traverse the model hierarchy to find the named object.
-				object3D.traverse((node) => {
-					if (node.name === 'pov_cam') {
-						// Update the position of the camera to match the object, with offset.
-						targetPosition.copy(node.getWorldPosition(new THREE.Vector3()));
-						targetPosition.add(this.data.distance);
-						this.el.object3D.position.lerp(targetPosition, 1);  // smooth movement
-
-
-					}
-				});
-			}
-		});
-
-
-		window.onload = function () {  // Added this line
-
-			const colorOptions = document.querySelectorAll('.color-option');
-			var car = document.querySelector('#merc');
-
-			car.addEventListener('model-loaded', function () {
-				colorOptions.forEach(function (button) {
-					button.addEventListener('click', function () {
-						var color = this.dataset.color;
-						car.setAttribute('model-color', 'color', color);
-					});
-				});
-			});
-
-
-
-
-		};  // And this line
+    car.addEventListener('model-loaded', function () {
+        colorOptionsBody.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var color = this.dataset.color;
+                car.setAttribute('model-color__body', 'color', color);
+                car.setAttribute('model-color__body', 'part', 'Body_odi_CARPAINT_Red_0');
+            });
+        });
+        colorOptionsTrim.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var color = this.dataset.color;
+                car.setAttribute('model-color__trim', 'color', color);
+                car.setAttribute('model-color__trim', 'part', 'Star_BronzeTrim_0');
+            });
+        });
+		colorOptionsInterior.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var color = this.dataset.color;
+                car.setAttribute('model-color__interior', 'color', color);
+                car.setAttribute('model-color__interior', 'part', 'FronSeatUpper_odi_ALCANTARA_FrontSeatUpper_0');
+            });
+        });
+    });
+};
+  // And this line
 
 		document.addEventListener('DOMContentLoaded', function () {
 
-			var switchButton = document.querySelector('#switch-button');
+			// var switchButton = document.querySelector('#switch-button');
 
-			var scene1 = document.querySelector('#scene1');
-			var scene2 = document.querySelector('#scene2');
+			// var scene1 = document.querySelector('#scene1');
+			// var scene2 = document.querySelector('#scene2');
 
-			var camera1 = document.querySelector('#camera_1');
-			var camera2 = document.querySelector('#camera_2');
+			// var camera1 = document.querySelector('#camera_1');
+			// var camera2 = document.querySelector('#camera_2');
 
-			switchButton.addEventListener('click', function () {
-				if (scene1.style.display === 'none') {
-					scene1.style.display = 'block';
-					scene2.style.display = 'none';
+			// switchButton.addEventListener('click', function () {
+			// 	if (scene1.style.display === 'none') {
+			// 		scene1.style.display = 'block';
+			// 		scene2.style.display = 'none';
 
-					camera1.setAttribute('camera', 'active', true);
-					camera2.setAttribute('camera', 'active', false);
+			// 		camera1.setAttribute('camera', 'active', true);
+			// 		camera2.setAttribute('camera', 'active', false);
 
-					switchButton.textContent = 'Take a Ride';
+			// 		switchButton.textContent = 'Take a Ride';
 
-					// Show color options
-					colorOptions.style.display = 'block';
-				} else {
-					scene1.style.display = 'none';
-					scene2.style.display = 'block';
+			// 		// Show color options
+			// 		colorOptions.style.display = 'block';
+			// 	} else {
+			// 		scene1.style.display = 'none';
+			// 		scene2.style.display = 'block';
 
-					camera1.setAttribute('camera', 'active', false);
-					camera2.setAttribute('camera', 'active', true);
+			// 		camera1.setAttribute('camera', 'active', false);
+			// 		camera2.setAttribute('camera', 'active', true);
 
-					switchButton.textContent = 'Go Back';
+			// 		switchButton.textContent = 'Go Back';
 
-					// Hide color options
-					colorOptions.style.display = 'none';
-				}
-			});
+			// 		// Hide color options
+			// 		colorOptions.style.display = 'none';
+			// 	}
+			// });
 
 			var models = document.querySelectorAll('a-gltf-model');
 			var loader = document.querySelector('#loading-screen');
@@ -199,13 +180,41 @@
 	<div class="scene-wrapper">
 		<div class="color-options">
 			<!-- <img id="customize" src="/resources/CustomWhite.png" alt="Customize" /> -->
-			<button class="color-option" data-color="#F00"></button>
-			<button class="color-option" data-color="#0F0"></button>
-			<button class="color-option" data-color="#00F"></button>
-			<button class="color-option" data-color="#FFF"></button>
-			<button class="color-option" data-color="#000"></button>
-			<button class="color-option" data-color="#d3b62c"></button>
-			<button id="switch-button">Take a Ride</button>
+			<div id="body-color">
+				<h3>Body Color:</h3>
+				<div class="color-container">
+					<button class="color-option-body" data-color="#F00"></button>
+					<button class="color-option-body" data-color="#0F0"></button>
+					<button class="color-option-body" data-color="#00F"></button>
+					<button class="color-option-body" data-color="#FFF"></button>
+					<button class="color-option-body" data-color="#000"></button>
+					<button class="color-option-body" data-color="#d3b62c"></button>
+				</div>
+			</div>
+			<div id="trim-color">
+				<h3>Trim Color:</h3>
+				<div class="color-container">
+					<button class="color-option-trim" data-color="#F00"></button>
+					<button class="color-option-trim" data-color="#0F0"></button>
+					<button class="color-option-trim" data-color="#00F"></button>
+					<button class="color-option-trim" data-color="#FFF"></button>
+					<button class="color-option-trim" data-color="#000"></button>
+					<button class="color-option-trim" data-color="#d3b62c"></button>
+				</div>
+			</div>
+			<div id="inside-color">
+				<h3>Interior Color:</h3>
+				<div class="color-container">
+					<button class="color-option-interior" data-color="#F00"></button>
+					<button class="color-option-interior" data-color="#0F0"></button>
+					<button class="color-option-interior" data-color="#00F"></button>
+					<button class="color-option-interior" data-color="#FFF"></button>
+					<button class="color-option-interior" data-color="#000"></button>
+					<button class="color-option-interior" data-color="#d3b62c"></button>
+				</div>
+			</div>
+
+			<!-- <button id="switch-button">Take a Ride</button> -->
 		</div>
 
 
@@ -282,7 +291,7 @@
 
 		<!-- Second Scene  -->
 
-		<a-scene id="scene2" style="display: none" shadow="type: pcfsoft; autoUpdate: true;"
+		<!-- <a-scene id="scene2" style="display: none" shadow="type: pcfsoft; autoUpdate: true;"
 			renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;"
 			vr-mode-ui="enabled: false">
 
@@ -291,9 +300,9 @@
 				<a-assets-item id="merc-test" src="/assets/testdrive_car.gltf"></a-assets-item>
 
 			</a-assets>
-			<!-- Sky -->
+			 Sky
 			<a-sky src="#sky" material="" geometry="" rotation="0 90 0" scale="2 2 2"></a-sky>
-			<!-- Your hidden space's entities go here -->
+			Your hidden space's entities go here 
 			<a-entity id="test-drive">
 				<a-camera id="camera_2" position="1 1 1" rotation="1 1 1" camera="fov: 35"
 					follow-object="target: #testCar; distance: 0 0 0" data-aframe-inspector-original-camera="">
@@ -308,7 +317,7 @@
 
 			</a-gltf-model>
 
-		</a-scene>
+		</a-scene> -->
 	</div>
 </body>
 
