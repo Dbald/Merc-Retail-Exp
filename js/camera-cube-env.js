@@ -64,17 +64,30 @@ AFRAME.registerComponent('camera-cube-env', {
   play: function () {}
 });
 
-// The scene treatment now starts its own retry loop as soon as this asset loads,
-// so it no longer depends on DOMContentLoaded/load timing. A versioned URL keeps
-// deploy previews deterministic while we finish the art-direction pass.
-(function loadScenePolish() {
+// Load the showroom treatment first, then the presentation-camera layer. Both
+// scripts have their own retry loops, so the behavior stays deterministic even
+// when the GLTF finishes after the page shell.
+(function loadVisionDuetPresentation() {
   if (document.querySelector('script[data-scene-polish-v3]')) return;
-  var script = document.createElement('script');
-  script.src = 'js/scene-polish.js?v=20260822-1628';
-  script.async = true;
-  script.setAttribute('data-scene-polish-v3', 'true');
-  script.onload = function () {
+
+  var polish = document.createElement('script');
+  polish.src = 'js/scene-polish.js?v=20260822-1628';
+  polish.async = true;
+  polish.setAttribute('data-scene-polish-v3', 'true');
+
+  polish.onload = function () {
     document.documentElement.setAttribute('data-scene-polish-loader', 'loaded-v3');
+
+    if (document.querySelector('script[data-focus-camera-v1]')) return;
+    var focus = document.createElement('script');
+    focus.src = 'js/focus-camera.js?v=20260822-1642';
+    focus.async = true;
+    focus.setAttribute('data-focus-camera-v1', 'true');
+    focus.onload = function () {
+      document.documentElement.setAttribute('data-focus-camera-loader', 'loaded-v1');
+    };
+    document.head.appendChild(focus);
   };
-  document.head.appendChild(script);
+
+  document.head.appendChild(polish);
 })();
