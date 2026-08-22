@@ -58,12 +58,12 @@
         const vein = Math.abs(Math.sin((nx * 7.2 + broad * 1.8) * Math.PI) * Math.cos((ny * 6.1 - fine) * Math.PI));
         const ridge = Math.pow(Math.max(0, 0.62 - Math.abs(broad - 0.5)), 1.5);
         const height = Math.min(1, Math.max(0, broad * 0.72 + fine * 0.20 + vein * 0.08));
-        const shade = Math.floor(14 + height * 42 + ridge * 30);
+        const shade = Math.min(190, Math.floor(56 + height * 82 + ridge * 44));
         const i = (y * size + x) * 4;
 
-        albedo.data[i] = Math.floor(shade * 0.78);
-        albedo.data[i + 1] = Math.floor(shade * 0.84);
-        albedo.data[i + 2] = Math.floor(shade * 0.90);
+        albedo.data[i] = Math.floor(shade * 0.76);
+        albedo.data[i + 1] = Math.floor(shade * 0.83);
+        albedo.data[i + 2] = Math.floor(shade * 0.92);
         albedo.data[i + 3] = 255;
 
         const bumpValue = Math.floor(height * 255);
@@ -111,12 +111,14 @@
     geometry.computeVertexNormals();
 
     const material = new THREE.MeshStandardMaterial({
-      color: new THREE.Color('#252a30'),
+      color: new THREE.Color('#aab0b7'),
       map: textures.colorMap,
       bumpMap: textures.bumpMap,
-      bumpScale: 0.95,
-      roughness: 0.94,
-      metalness: 0.015,
+      bumpScale: 1.15,
+      roughness: 0.92,
+      metalness: 0.01,
+      emissive: new THREE.Color('#10151b'),
+      emissiveIntensity: 0.22,
       side: THREE.DoubleSide
     });
 
@@ -142,12 +144,14 @@
     geometry.computeVertexNormals();
 
     const material = new THREE.MeshStandardMaterial({
-      color: new THREE.Color('#171b20'),
+      color: new THREE.Color('#747d86'),
       map: textures.colorMap,
       bumpMap: textures.bumpMap,
-      bumpScale: 0.7,
-      roughness: 0.97,
+      bumpScale: 0.9,
+      roughness: 0.95,
       metalness: 0.01,
+      emissive: new THREE.Color('#0b1016'),
+      emissiveIntensity: 0.14,
       side: THREE.DoubleSide
     });
 
@@ -236,7 +240,27 @@
     coolEdge.setAttribute('position', '5 8 -12');
     group.appendChild(coolEdge);
 
-    scene.setAttribute('fog', 'type: exponential; color: #07090c; density: 0.0065');
+    // Dedicated cavern illumination: one broad cool fill and one side rake.
+    // These lights exist specifically so the stone texture never collapses into black.
+    const wallFill = document.createElement('a-light');
+    wallFill.setAttribute('type', 'point');
+    wallFill.setAttribute('color', '#c7d5e8');
+    wallFill.setAttribute('intensity', '2.35');
+    wallFill.setAttribute('distance', '38');
+    wallFill.setAttribute('decay', '2');
+    wallFill.setAttribute('position', '12 12 -7');
+    group.appendChild(wallFill);
+
+    const wallRake = document.createElement('a-light');
+    wallRake.setAttribute('type', 'point');
+    wallRake.setAttribute('color', '#8fa8c7');
+    wallRake.setAttribute('intensity', '1.65');
+    wallRake.setAttribute('distance', '34');
+    wallRake.setAttribute('decay', '2');
+    wallRake.setAttribute('position', '14 7 11');
+    group.appendChild(wallRake);
+
+    scene.setAttribute('fog', 'type: exponential; color: #07090c; density: 0.0048');
 
     const player = document.querySelector('#player');
     const camera = document.querySelector('#camera_1');
@@ -248,9 +272,9 @@
 
     car.setAttribute('showroom-reflections', 'intensity: 2.05; tune: true');
 
-    if (scene.renderer) scene.renderer.toneMappingExposure = 0.91;
+    if (scene.renderer) scene.renderer.toneMappingExposure = 0.94;
     scene.addEventListener('renderstart', function () {
-      if (scene.renderer) scene.renderer.toneMappingExposure = 0.91;
+      if (scene.renderer) scene.renderer.toneMappingExposure = 0.94;
     }, { once: true });
 
     return true;
