@@ -239,12 +239,30 @@
     return light;
   }
 
+  function applyFocusMode() {
+    const camera = document.querySelector('#camera_1');
+    if (camera) {
+      camera.setAttribute('look-controls', 'mouseEnabled: false; touchEnabled: false; magicWindowTrackingEnabled: false; pointerLockEnabled: false');
+    }
+
+    document.querySelectorAll('.hotspot').forEach(function (hotspot) {
+      hotspot.remove();
+    });
+
+    const navigationCard = document.querySelector('.navigation-card');
+    if (navigationCard) navigationCard.remove();
+
+    document.documentElement.setAttribute('data-focus-mode', 'car');
+  }
+
   function applyScenePolish() {
     const scene = document.querySelector('#scene1');
     const group = document.querySelector('#scene-fidelity-group');
     const car = document.querySelector('#merc');
     if (!scene || !group || !car) return false;
     if (!scene.object3D) return false;
+
+    applyFocusMode();
 
     if (!scene.object3D.getObjectByName('vision-duet-curved-cavern')) {
       group.querySelectorAll('a-dodecahedron').forEach(function (rock) {
