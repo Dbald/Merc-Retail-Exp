@@ -1,4 +1,7 @@
 (function () {
+  if (window.__VISION_DUET_SCENE_POLISH__) return;
+  window.__VISION_DUET_SCENE_POLISH__ = true;
+
   const THREE = AFRAME.THREE;
 
   function hash2(x, y) {
@@ -26,19 +29,19 @@
 
   function fbm(x, y) {
     let value = 0;
-    let amplitude = 0.55;
-    let frequency = 1;
+    let amp = 0.55;
+    let freq = 1;
     let total = 0;
-    for (let octave = 0; octave < 5; octave++) {
-      value += valueNoise(x * frequency, y * frequency) * amplitude;
-      total += amplitude;
-      frequency *= 2.03;
-      amplitude *= 0.5;
+    for (let i = 0; i < 5; i++) {
+      value += valueNoise(x * freq, y * freq) * amp;
+      total += amp;
+      amp *= 0.5;
+      freq *= 2.07;
     }
     return value / total;
   }
 
-  function createStoneTextures(size) {
+  function createStoneMaps(size) {
     const albedoCanvas = document.createElement('canvas');
     const bumpCanvas = document.createElement('canvas');
     albedoCanvas.width = albedoCanvas.height = size;
@@ -51,22 +54,29 @@
 
     for (let y = 0; y < size; y++) {
       for (let x = 0; x < size; x++) {
-        const nx = x / size;
-        const ny = y / size;
-        const broad = fbm(nx * 5.2, ny * 5.2);
-        const fine = fbm(nx * 18.0 + 11.3, ny * 18.0 - 7.4);
-        const vein = Math.abs(Math.sin((nx * 7.2 + broad * 1.8) * Math.PI) * Math.cos((ny * 6.1 - fine) * Math.PI));
-        const ridge = Math.pow(Math.max(0, 0.62 - Math.abs(broad - 0.5)), 1.5);
-        const height = Math.min(1, Math.max(0, broad * 0.72 + fine * 0.20 + vein * 0.08));
-        const shade = Math.min(190, Math.floor(56 + height * 82 + ridge * 44));
-        const i = (y * size + x) * 4;
+        const u = x / size;
+        const v = y / size;
+        const broad = fbm(u * 4.0, v * 4.0);
+        const mid = fbm(u * 11.0 + 4.3, v * 11.0 - 2.7);
+        const fine = fbm(u * 31.0 - 8.1, v * 31.0 + 6.4);
+        const strata = Math.abs(Math.sin((v * 19.0 + broad * 5.0 + Math.sin(u * 8.0) * 0.65) * Math.PI));
+        const folded = Math.abs(Math.sin((u * 8.0 + mid * 4.0) * Math.PI) * Math.cos((v * 7.0 - broad * 2.0) * Math.PI));
+        const crackWave = Math.abs(Math.sin((u * 13.0 + v * 5.5 + mid * 3.0) * Math.PI));
+        const crack = Math.pow(Math.max(0, 0.12 - crackWave) / 0.12, 2.4);
 
-        albedo.data[i] = Math.floor(shade * 0.76);
-        albedo.data[i + 1] = Math.floor(shade * 0.83);
+        let height = broad * 0.50 + mid * 0.24 + fine * 0.10 + strata * 0.10 + folded * 0.06;
+        height = Math.max(0, Math.min(1, height));
+
+        let shade = 44 + height * 112 + strata * 22 + folded * 18 - crack * 65;
+        shade = Math.max(24, Math.min(178, shade));
+
+        const i = (y * size + x) * 4;
+        albedo.data[i] = Math.floor(shade * 0.82);
+        albedo.data[i + 1] = Math.floor(shade * 0.87);
         albedo.data[i + 2] = Math.floor(shade * 0.92);
         albedo.data[i + 3] = 255;
 
-        const bumpValue = Math.floor(height * 255);
+        const bumpValue = Math.floor(Math.max(0, Math.min(1, height - crack * 0.25)) * 255);
         bump.data[i] = bumpValue;
         bump.data[i + 1] = bumpValue;
         bump.data[i + 2] = bumpValue;
@@ -81,84 +91,55 @@
     const bumpMap = new THREE.CanvasTexture(bumpCanvas);
     colorMap.wrapS = colorMap.wrapT = THREE.RepeatWrapping;
     bumpMap.wrapS = bumpMap.wrapT = THREE.RepeatWrapping;
-    colorMap.repeat.set(1.6, 1.15);
+    colorMap.repeat.set(3.1, 1.55);
     bumpMap.repeat.copy(colorMap.repeat);
-    colorMap.anisotropy = 4;
-    bumpMap.anisotropy = 4;
+    colorMap.anisotropy = 8;
+    bumpMap.anisotropy = 8;
 
     if ('colorSpace' in colorMap && THREE.SRGBColorSpace) colorMap.colorSpace = THREE.SRGBColorSpace;
     else if (THREE.sRGBEncoding) colorMap.encoding = THREE.sRGBEncoding;
 
-    return { colorMap, bumpMap };
+    return { colorMap: colorMap, bumpMap: bumpMap };
   }
 
-  function createCavernWall(textures) {
-    const geometry = new THREE.PlaneGeometry(54, 27, 84, 42);
+  function createCurvedCavern(maps) {
+    const width = 70;
+    const height = 34;
+    const geometry = new THREE.PlaneGeometry(width, height, 140, 68);
     const positions = geometry.attributes.position;
 
     for (let i = 0; i < positions.count; i++) {
       const x = positions.getX(i);
       const y = positions.getY(i);
-      const nx = (x + 27) / 54;
-      const ny = (y + 13.5) / 27;
-      const broad = fbm(nx * 4.2, ny * 4.2);
-      const detail = fbm(nx * 13.0 + 2.7, ny * 13.0 - 1.8);
-      const edgeFalloff = Math.sin(Math.min(1, nx) * Math.PI) * Math.sin(Math.min(1, ny) * Math.PI);
-      const depth = ((broad - 0.5) * 2.9 + (detail - 0.5) * 0.85) * (0.65 + edgeFalloff * 0.55);
-      positions.setZ(i, depth);
+      const u = (x + width / 2) / width;
+      const v = (y + height / 2) / height;
+      const curve = (x * x) / 118.0;
+      const broad = fbm(u * 4.4, v * 4.4);
+      const detail = fbm(u * 13.0 + 3.6, v * 13.0 - 2.1);
+      const ledge = Math.sin((v * 9.0 + broad * 2.0) * Math.PI) * 0.55;
+      const relief = (broad - 0.5) * 3.4 + (detail - 0.5) * 1.15 + ledge;
+      positions.setZ(i, curve + relief);
     }
 
     geometry.computeVertexNormals();
 
     const material = new THREE.MeshStandardMaterial({
-      color: new THREE.Color('#aab0b7'),
-      map: textures.colorMap,
-      bumpMap: textures.bumpMap,
-      bumpScale: 1.15,
-      roughness: 0.92,
-      metalness: 0.01,
-      emissive: new THREE.Color('#10151b'),
-      emissiveIntensity: 0.22,
+      color: new THREE.Color('#ffffff'),
+      map: maps.colorMap,
+      bumpMap: maps.bumpMap,
+      bumpScale: 1.75,
+      roughness: 0.96,
+      metalness: 0.0,
+      emissive: new THREE.Color('#1b2026'),
+      emissiveMap: maps.colorMap,
+      emissiveIntensity: 0.18,
       side: THREE.DoubleSide
     });
 
     const wall = new THREE.Mesh(geometry, material);
-    wall.name = 'textured-cavern-wall';
-    wall.position.set(22.5, 8.2, 0);
+    wall.name = 'vision-duet-curved-cavern';
+    wall.position.set(23.5, 8.6, 0);
     wall.rotation.y = -Math.PI / 2;
-    wall.receiveShadow = true;
-    return wall;
-  }
-
-  function createSideWall(textures, side) {
-    const geometry = new THREE.PlaneGeometry(31, 25, 44, 30);
-    const positions = geometry.attributes.position;
-    for (let i = 0; i < positions.count; i++) {
-      const x = positions.getX(i);
-      const y = positions.getY(i);
-      const nx = (x + 15.5) / 31;
-      const ny = (y + 12.5) / 25;
-      const depth = (fbm(nx * 4.5 + side * 4.1, ny * 4.5) - 0.5) * 2.2;
-      positions.setZ(i, depth);
-    }
-    geometry.computeVertexNormals();
-
-    const material = new THREE.MeshStandardMaterial({
-      color: new THREE.Color('#747d86'),
-      map: textures.colorMap,
-      bumpMap: textures.bumpMap,
-      bumpScale: 0.9,
-      roughness: 0.95,
-      metalness: 0.01,
-      emissive: new THREE.Color('#0b1016'),
-      emissiveIntensity: 0.14,
-      side: THREE.DoubleSide
-    });
-
-    const wall = new THREE.Mesh(geometry, material);
-    wall.name = side < 0 ? 'cavern-side-left' : 'cavern-side-right';
-    wall.position.set(10.5, 7.0, side * 27.0);
-    wall.rotation.y = side < 0 ? -0.92 : -2.22;
     wall.receiveShadow = true;
     return wall;
   }
@@ -169,126 +150,209 @@
     entity.setAttribute('material', Object.assign({}, current, values));
   }
 
+  function getConfiguredColor(car, componentName, fallback) {
+    const data = car.getAttribute(componentName);
+    return data && data.color ? data.color : fallback;
+  }
+
+  function styleMaterial(material, color, type) {
+    if (!material) return;
+    if (material.map) material.map = null;
+    if (material.color) material.color.set(color);
+
+    if (type === 'paint') {
+      if ('metalness' in material) material.metalness = 0.22;
+      if ('roughness' in material) material.roughness = 0.30;
+      if ('envMapIntensity' in material) material.envMapIntensity = 0.82;
+      if ('clearcoat' in material) material.clearcoat = 0.72;
+      if ('clearcoatRoughness' in material) material.clearcoatRoughness = 0.13;
+    } else if (type === 'trim') {
+      if ('metalness' in material) material.metalness = 0.76;
+      if ('roughness' in material) material.roughness = 0.24;
+      if ('envMapIntensity' in material) material.envMapIntensity = 1.05;
+    } else if (type === 'interior') {
+      if ('metalness' in material) material.metalness = 0.02;
+      if ('roughness' in material) material.roughness = 0.78;
+      if ('envMapIntensity' in material) material.envMapIntensity = 0.22;
+    }
+
+    material.needsUpdate = true;
+  }
+
+  function syncConfiguratorMaterials(car) {
+    if (!car || !car.object3D) return false;
+
+    const exterior = getConfiguredColor(car, 'model-color__body', '#610000');
+    const trim = getConfiguredColor(car, 'model-color__trim', '#c49c6c');
+    const interior = getConfiguredColor(car, 'model-color__interior', '#f1e9df');
+    let foundPaint = false;
+
+    car.object3D.traverse(function (node) {
+      if (!node.isMesh || !node.material) return;
+      const name = (node.name || '').toLowerCase();
+      const materials = Array.isArray(node.material) ? node.material : [node.material];
+
+      if (name.indexOf('body_odi_carpaint') !== -1) {
+        foundPaint = true;
+        materials.forEach(function (m) { styleMaterial(m, exterior, 'paint'); });
+      } else if (name.indexOf('bronze') !== -1 && name.indexOf('trim') !== -1) {
+        materials.forEach(function (m) { styleMaterial(m, trim, 'trim'); });
+      } else if (name.indexOf('alcantara') !== -1) {
+        materials.forEach(function (m) { styleMaterial(m, interior, 'interior'); });
+      }
+    });
+
+    return foundPaint;
+  }
+
+  function watchConfiguratorMaterials(car) {
+    if (car.__visionDuetMaterialWatch) return;
+    car.__visionDuetMaterialWatch = true;
+
+    const sync = function () {
+      window.requestAnimationFrame(function () { syncConfiguratorMaterials(car); });
+    };
+
+    car.addEventListener('model-loaded', sync);
+    const observer = new MutationObserver(function (mutations) {
+      for (let i = 0; i < mutations.length; i++) {
+        const name = mutations[i].attributeName || '';
+        if (name.indexOf('model-color__') === 0) {
+          sync();
+          break;
+        }
+      }
+    });
+    observer.observe(car, { attributes: true });
+    sync();
+  }
+
+  function addPointLight(parent, color, intensity, distance, position) {
+    const light = document.createElement('a-light');
+    light.setAttribute('type', 'point');
+    light.setAttribute('color', color);
+    light.setAttribute('intensity', String(intensity));
+    light.setAttribute('distance', String(distance));
+    light.setAttribute('decay', '2');
+    light.setAttribute('position', position);
+    parent.appendChild(light);
+    return light;
+  }
+
+  function applyFocusMode() {
+    const camera = document.querySelector('#camera_1');
+    if (camera) {
+      camera.setAttribute('look-controls', 'mouseEnabled: false; touchEnabled: false; magicWindowTrackingEnabled: false; pointerLockEnabled: false');
+    }
+
+    document.querySelectorAll('.hotspot').forEach(function (hotspot) {
+      hotspot.remove();
+    });
+
+    const navigationCard = document.querySelector('.navigation-card');
+    if (navigationCard) navigationCard.remove();
+
+    document.documentElement.setAttribute('data-focus-mode', 'car');
+  }
+
   function applyScenePolish() {
     const scene = document.querySelector('#scene1');
     const group = document.querySelector('#scene-fidelity-group');
     const car = document.querySelector('#merc');
     if (!scene || !group || !car) return false;
-    if (scene.object3D.getObjectByName('textured-cavern-wall')) return true;
+    if (!scene.object3D) return false;
 
-    group.querySelectorAll('a-dodecahedron').forEach(rock => rock.setAttribute('visible', false));
+    applyFocusMode();
 
-    const textures = createStoneTextures(320);
-    scene.object3D.add(createCavernWall(textures));
-    scene.object3D.add(createSideWall(textures, -1));
-    scene.object3D.add(createSideWall(textures, 1));
+    if (!scene.object3D.getObjectByName('vision-duet-curved-cavern')) {
+      group.querySelectorAll('a-dodecahedron').forEach(function (rock) {
+        rock.setAttribute('visible', false);
+      });
 
-    const floor = document.querySelector('#showroom-floor');
-    const podiumBase = document.querySelector('#podium-base');
-    const podiumTop = document.querySelector('#podium-top');
-    const outerRing = document.querySelector('#podium-light-ring');
-    const innerRing = document.querySelector('#podium-inner-ring');
+      ['textured-cavern-wall', 'cavern-side-left', 'cavern-side-right'].forEach(function (name) {
+        const old = scene.object3D.getObjectByName(name);
+        if (old && old.parent) old.parent.remove(old);
+      });
 
-    setMaterial(floor, {
-      shader: 'standard', color: '#090c10', metalness: 0.48, roughness: 0.24
-    });
-    floor && floor.setAttribute('showroom-lightmap', 'mode: floor; intensity: 0.82');
-    floor && floor.setAttribute('showroom-reflections', 'intensity: 1.18');
+      const maps = createStoneMaps(512);
+      scene.object3D.add(createCurvedCavern(maps));
 
-    setMaterial(podiumBase, {
-      shader: 'standard', color: '#050608', metalness: 0.76, roughness: 0.18
-    });
-    podiumBase && podiumBase.setAttribute('showroom-reflections', 'intensity: 1.35');
+      const floor = document.querySelector('#showroom-floor');
+      const podiumBase = document.querySelector('#podium-base');
+      const podiumTop = document.querySelector('#podium-top');
+      const outerRing = document.querySelector('#podium-light-ring');
+      const innerRing = document.querySelector('#podium-inner-ring');
 
-    setMaterial(podiumTop, {
-      shader: 'standard', color: '#11151a', metalness: 0.68, roughness: 0.22
-    });
-    podiumTop && podiumTop.setAttribute('showroom-lightmap', 'mode: radial; intensity: 0.92; warm: false');
-    podiumTop && podiumTop.setAttribute('showroom-reflections', 'intensity: 1.65');
+      setMaterial(floor, { shader: 'standard', color: '#07090c', metalness: 0.34, roughness: 0.30 });
+      if (floor) {
+        floor.setAttribute('showroom-lightmap', 'mode: floor; intensity: 0.55; warm: false');
+        floor.setAttribute('showroom-reflections', 'intensity: 0.72');
+      }
 
-    setMaterial(outerRing, {
-      shader: 'standard', color: '#fffdf7', emissive: '#fff5df', emissiveIntensity: 3.0, metalness: 0.08, roughness: 0.12
-    });
-    setMaterial(innerRing, {
-      shader: 'standard', color: '#98a2ad', emissive: '#8995a5', emissiveIntensity: 0.42, metalness: 0.32, roughness: 0.28
-    });
+      setMaterial(podiumBase, { shader: 'standard', color: '#050607', metalness: 0.58, roughness: 0.24 });
+      if (podiumBase) podiumBase.setAttribute('showroom-reflections', 'intensity: 0.82');
 
-    const lights = group.querySelectorAll('a-light');
-    if (lights[0]) lights[0].setAttribute('intensity', '0.11');
-    if (lights[1]) { lights[1].setAttribute('intensity', '0.82'); lights[1].setAttribute('color', '#f4f7ff'); }
-    if (lights[2]) { lights[2].setAttribute('intensity', '0.72'); lights[2].setAttribute('color', '#9dbdff'); }
-    if (lights[3]) { lights[3].setAttribute('intensity', '1.95'); lights[3].setAttribute('color', '#ffbd67'); }
-    if (lights[4]) { lights[4].setAttribute('intensity', '0.68'); lights[4].setAttribute('color', '#eef3ff'); }
-    if (lights[5]) lights[5].setAttribute('intensity', '0.42');
-    if (lights[6]) lights[6].setAttribute('intensity', '0.38');
+      setMaterial(podiumTop, { shader: 'standard', color: '#0e1115', metalness: 0.52, roughness: 0.25 });
+      if (podiumTop) {
+        podiumTop.setAttribute('showroom-lightmap', 'mode: radial; intensity: 0.52; warm: false');
+        podiumTop.setAttribute('showroom-reflections', 'intensity: 0.95');
+      }
 
-    const rearRim = document.createElement('a-light');
-    rearRim.setAttribute('type', 'point');
-    rearRim.setAttribute('color', '#ffb45d');
-    rearRim.setAttribute('intensity', '2.2');
-    rearRim.setAttribute('distance', '30');
-    rearRim.setAttribute('decay', '2');
-    rearRim.setAttribute('position', '8 4 8');
-    group.appendChild(rearRim);
+      setMaterial(outerRing, {
+        shader: 'standard', color: '#fffdf8', emissive: '#fff8e7', emissiveIntensity: 2.6,
+        metalness: 0.05, roughness: 0.14
+      });
+      setMaterial(innerRing, {
+        shader: 'standard', color: '#7f8995', emissive: '#6d7886', emissiveIntensity: 0.28,
+        metalness: 0.26, roughness: 0.32
+      });
 
-    const coolEdge = document.createElement('a-light');
-    coolEdge.setAttribute('type', 'point');
-    coolEdge.setAttribute('color', '#8fb6ff');
-    coolEdge.setAttribute('intensity', '1.15');
-    coolEdge.setAttribute('distance', '32');
-    coolEdge.setAttribute('decay', '2');
-    coolEdge.setAttribute('position', '5 8 -12');
-    group.appendChild(coolEdge);
+      const lights = group.querySelectorAll('a-light');
+      if (lights[0]) lights[0].setAttribute('intensity', '0.08');
+      if (lights[1]) { lights[1].setAttribute('intensity', '0.58'); lights[1].setAttribute('color', '#eef3ff'); }
+      if (lights[2]) { lights[2].setAttribute('intensity', '0.46'); lights[2].setAttribute('color', '#9fb8db'); }
+      if (lights[3]) { lights[3].setAttribute('intensity', '1.25'); lights[3].setAttribute('color', '#e8a85e'); }
+      if (lights[4]) { lights[4].setAttribute('intensity', '0.48'); lights[4].setAttribute('color', '#e8eef8'); }
 
-    // Dedicated cavern illumination: one broad cool fill and one side rake.
-    // These lights exist specifically so the stone texture never collapses into black.
-    const wallFill = document.createElement('a-light');
-    wallFill.setAttribute('type', 'point');
-    wallFill.setAttribute('color', '#c7d5e8');
-    wallFill.setAttribute('intensity', '2.35');
-    wallFill.setAttribute('distance', '38');
-    wallFill.setAttribute('decay', '2');
-    wallFill.setAttribute('position', '12 12 -7');
-    group.appendChild(wallFill);
+      addPointLight(group, '#d8e2ee', 1.75, 42, '6 14 -11');
+      addPointLight(group, '#8fa6c4', 1.35, 40, '8 8 13');
+      addPointLight(group, '#ffb05b', 1.55, 30, '6 4 8');
+      addPointLight(group, '#8eabdb', 0.82, 30, '3 7 -10');
 
-    const wallRake = document.createElement('a-light');
-    wallRake.setAttribute('type', 'point');
-    wallRake.setAttribute('color', '#8fa8c7');
-    wallRake.setAttribute('intensity', '1.65');
-    wallRake.setAttribute('distance', '34');
-    wallRake.setAttribute('decay', '2');
-    wallRake.setAttribute('position', '14 7 11');
-    group.appendChild(wallRake);
+      scene.setAttribute('fog', 'type: exponential; color: #080b0f; density: 0.0028');
 
-    scene.setAttribute('fog', 'type: exponential; color: #07090c; density: 0.0048');
+      const player = document.querySelector('#player');
+      const camera = document.querySelector('#camera_1');
+      if (player) {
+        player.setAttribute('position', '-40.5 4.55 0.2');
+        player.setAttribute('rotation', '0.6 -87.2 0');
+      }
+      if (camera) camera.setAttribute('camera', 'active: true; fov: 37');
 
-    const player = document.querySelector('#player');
-    const camera = document.querySelector('#camera_1');
-    if (player) {
-      player.setAttribute('position', '-39.5 4.6 0.4');
-      player.setAttribute('rotation', '0.8 -87.2 0');
+      car.setAttribute('showroom-reflections', 'intensity: 0.82; tune: false');
+
+      const setExposure = function () {
+        if (scene.renderer) scene.renderer.toneMappingExposure = 0.86;
+      };
+      setExposure();
+      scene.addEventListener('renderstart', setExposure, { once: true });
+
+      document.documentElement.setAttribute('data-scene-polish', 'curved-cavern-v3');
     }
-    if (camera) camera.setAttribute('camera', 'active: true; fov: 38');
 
-    car.setAttribute('showroom-reflections', 'intensity: 2.05; tune: true');
-
-    if (scene.renderer) scene.renderer.toneMappingExposure = 0.94;
-    scene.addEventListener('renderstart', function () {
-      if (scene.renderer) scene.renderer.toneMappingExposure = 0.94;
-    }, { once: true });
-
+    watchConfiguratorMaterials(car);
+    syncConfiguratorMaterials(car);
     return true;
   }
 
-  function bootScenePolish(attempt) {
+  function boot(attempt) {
     if (applyScenePolish()) return;
-    if (attempt < 80) window.setTimeout(() => bootScenePolish(attempt + 1), 100);
+    if (attempt < 160) window.setTimeout(function () { boot(attempt + 1); }, 75);
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    bootScenePolish(0);
-  });
-  window.addEventListener('load', function () {
-    bootScenePolish(0);
-  });
+  // Start immediately. This makes the polish independent of whether the script
+  // arrives before or after DOMContentLoaded/load.
+  boot(0);
+  document.addEventListener('DOMContentLoaded', function () { boot(0); }, { once: true });
+  window.addEventListener('load', function () { boot(0); }, { once: true });
 })();

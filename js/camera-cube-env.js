@@ -4,120 +4,90 @@
  */
 AFRAME.registerComponent('camera-cube-env', {
   schema: {
-	    resolution: { type:'number', default: 128},
-	    distance: {type:'number', default: 100000},
-	    interval: { type:'number', default: 1000},
-	    repeat: { type:'boolean', default: false}
-	  },
+    resolution: { type: 'number', default: 128 },
+    distance: { type: 'number', default: 100000 },
+    interval: { type: 'number', default: 1000 },
+    repeat: { type: 'boolean', default: false }
+  },
 
-	  /**
-	   * Set if component needs multiple instancing.
-	   */
-	  multiple: false,
+  multiple: false,
 
-	  /**
-	   * Called once when component is attached. Generally for initial setup.
-	   */
-	  init: function(){
-	    this.counter = this.data.interval;
-	    this.cam = new THREE.CubeCamera( 1.0, this.data.distance, this.data.resolution);
-		
-		this.cam.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
-		this.cam.renderTarget.texture.generateMipmaps = true;
-	    this.el.object3D.add( this.cam );
+  init: function () {
+    this.counter = this.data.interval;
+    this.cam = new THREE.CubeCamera(1.0, this.data.distance, this.data.resolution);
+    this.cam.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+    this.cam.renderTarget.texture.generateMipmaps = true;
+    this.el.object3D.add(this.cam);
+    this.done = false;
+  },
 
-	    this.done = false;
-		var myCam = this.cam;
-		var myEl = this.el;
-		var myMesh = this.el.getObject3D('mesh');
+  tick: function (t, dt) {
+    var myCam = this.cam;
+    if (this.done) return;
 
-		document.querySelector('a-scene').addEventListener('loaded', function (myCam, myEl, myMesh) {
-			if(myMesh){
-				myMesh.traverse( function( child ) { 
-					if ( child instanceof THREE.Mesh ) {
-						child.material.envMap = myCam.renderTarget.texture;
-						child.material.needsUpdate = true;
-					}
-				});
-			}
-		});      
-			  
-	  },
-	  
-	  tick: function(t,dt){
-		var myCam = this.cam;
-	    if(!this.done){
-	      if( this.counter > 0){
-	        this.counter-=dt;
-	      }else{
-	        this.mesh = this.el.getObject3D('mesh');
-	        
-	        if(this.mesh){
-	            this.mesh.visible = false;
-				AFRAME.scenes[0].renderer.autoClear = true;
-				// getWorldPosition FIX
-	            myCam.position.copy(this.el.object3D.worldToLocal(this.el.object3D.getWorldPosition(myCam.position)));
-	            myCam.update( AFRAME.scenes[0].renderer, this.el.sceneEl.object3D );
+    if (this.counter > 0) {
+      this.counter -= dt;
+      return;
+    }
 
-	            this.mesh.traverse( function( child ) { 
-	                if ( child instanceof THREE.Mesh ){
-						child.material.envMap = myCam.renderTarget.texture;
-						child.material.needsUpdate = true;
-					}
-	            });
-	            this.mesh.visible = true;
-	        
-	            if(!this.data.repeat){
-	              this.done = true;
-	              this.counter = this.data.interval;
-	            }
-	        }
-	      }
-	    }
-	  },
+    this.mesh = this.el.getObject3D('mesh');
+    if (!this.mesh) return;
 
-	  /**
-	   * Called when component is attached and when component data changes.
-	   * Generally modifies the entity based on the data.
-	   */
-	  update: function (oldData) {
-			this.counter = this.data.interval;
-				this.cam = new THREE.CubeCamera( 1.0, this.data.distance, this.data.resolution);
-			  this.cam.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
-	          this.el.object3D.add( this.cam );
-	          this.done = false;
-			  var myCam = this.cam;
-			  
-	          this.mesh = this.el.getObject3D('mesh');
-	          if(this.mesh){
-	            this.mesh.traverse( function( child ) { 
-	                if ( child instanceof THREE.Mesh ) {
-						child.material.envMap = myCam.renderTarget.texture;
-						myCam.renderTarget.texture.generateMipmaps = true;
-						child.material.needsUpdate = true;
-					}
-	            });
-	          }
-	  },
+    this.mesh.visible = false;
+    AFRAME.scenes[0].renderer.autoClear = true;
+    myCam.position.copy(this.el.object3D.worldToLocal(this.el.object3D.getWorldPosition(myCam.position)));
+    myCam.update(AFRAME.scenes[0].renderer, this.el.sceneEl.object3D);
 
-	  /**
-	   * Called when a component is removed (e.g., via removeAttribute).
-	   * Generally undoes any modifications made by the component.
-	   */
-	  remove: function () {},
+    this.mesh.traverse(function (child) {
+      if (child instanceof THREE.Mesh) {
+        var materials = Array.isArray(child.material) ? child.material : [child.material];
+        materials.forEach(function (material) {
+          if (!material) return;
+          material.envMap = myCam.renderTarget.texture;
+          material.needsUpdate = true;
+        });
+      }
+    });
 
-	  pause: function () { },
-	  play: function () { }
-	});
+    this.mesh.visible = true;
+    if (!this.data.repeat) this.done = true;
+    this.counter = this.data.interval;
+  },
 
-// Load the second-pass showroom material/lighting treatment after the original
-// scene components have registered. The version changes whenever this file's
-// visual treatment changes, guaranteeing a fresh browser request.
-(function loadScenePolish() {
-  if (document.querySelector('script[data-scene-polish]')) return;
-  var script = document.createElement('script');
-  script.src = 'js/scene-polish.js?v=20260822-0414';
-  script.async = false;
-  script.setAttribute('data-scene-polish', 'true');
-  document.head.appendChild(script);
+  update: function () {
+    this.counter = this.data.interval;
+    this.done = false;
+  },
+
+  remove: function () {},
+  pause: function () {},
+  play: function () {}
+});
+
+// Load the showroom treatment first, then the presentation-camera layer. Both
+// scripts have their own retry loops, so the behavior stays deterministic even
+// when the GLTF finishes after the page shell.
+(function loadVisionDuetPresentation() {
+  if (document.querySelector('script[data-scene-polish-v3]')) return;
+
+  var polish = document.createElement('script');
+  polish.src = 'js/scene-polish.js?v=20260822-1628';
+  polish.async = true;
+  polish.setAttribute('data-scene-polish-v3', 'true');
+
+  polish.onload = function () {
+    document.documentElement.setAttribute('data-scene-polish-loader', 'loaded-v3');
+
+    if (document.querySelector('script[data-focus-camera-v1]')) return;
+    var focus = document.createElement('script');
+    focus.src = 'js/focus-camera.js?v=20260822-1642';
+    focus.async = true;
+    focus.setAttribute('data-focus-camera-v1', 'true');
+    focus.onload = function () {
+      document.documentElement.setAttribute('data-focus-camera-loader', 'loaded-v1');
+    };
+    document.head.appendChild(focus);
+  };
+
+  document.head.appendChild(polish);
 })();
