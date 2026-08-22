@@ -111,12 +111,12 @@ AFRAME.registerComponent('camera-cube-env', {
 	});
 
 // Load the second-pass showroom material/lighting treatment after the original
-// scene components have registered. Versioned so deploy previews and production
-// clients do not reuse an older cached polish pass.
+// scene components have registered. The version changes whenever this file's
+// visual treatment changes, guaranteeing a fresh browser request.
 (function loadScenePolish() {
   if (document.querySelector('script[data-scene-polish]')) return;
   var script = document.createElement('script');
-  script.src = 'js/scene-polish.js?v=20260821-2354';
+  script.src = 'js/scene-polish.js?v=20260822-0414';
   script.async = false;
   script.setAttribute('data-scene-polish', 'true');
   document.head.appendChild(script);
