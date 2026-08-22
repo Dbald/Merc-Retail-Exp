@@ -1,313 +1,332 @@
-/* to display text in front of the aframe canvas*/
-#loading-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
   width: 100%;
   height: 100%;
-  background: #000;
+  margin: 0;
+  overflow: hidden;
+  background: #050505;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* Loading experience */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #050505;
   color: #fff;
   display: flex;
-  transition: opacity 0.5s ease;
-  opacity: 1;
   align-items: center;
   justify-content: center;
-  z-index: 2;
+  transition: opacity 0.5s ease;
+  opacity: 1;
+  z-index: 9999;
 }
 
 #loading-screen-container {
+  width: min(620px, calc(100vw - 48px));
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  margin: 20px;
-  transition: 0.3s ease-in-out;
+  justify-content: center;
 }
 
-#greeting, #made-by {
+#greeting,
+#made-by {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  margin: 20px;
-  transition: 0.3s ease-in-out;
-  animation: fadeIn ease 3s; /* This line applies the animation */
-  -webkit-animation: fadeIn ease 3s; /* Support for Safari and Chrome */
-  -moz-animation: fadeIn ease 3s; /* Support for Firefox */
-  -o-animation: fadeIn ease 3s; /* Support for Opera */
-  -ms-animation: fadeIn ease 3s; /* Support for Internet Explorer */
-  visibility: visible !important;
+  animation: fadeIn 1.4s ease both;
 }
 
-.info-bubble {
-  display: none;
-  position: absolute;
-  background-color: #fff;
-  color: #000;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+#greeting {
+  margin-bottom: 28px;
 }
 
+#made-by {
+  margin-top: 28px;
+  opacity: 0.72;
+}
 
 #logo {
-  width: 25%;
-  max-width: 300px;
+  width: min(210px, 42vw);
   margin-bottom: 20px;
-  transition: 0.3s ease-out;
-  animation: fadeIn ease 3s; /* This line applies the animation */
-  -webkit-animation: fadeIn ease 3s; /* Support for Safari and Chrome */
-  -moz-animation: fadeIn ease 3s; /* Support for Firefox */
-  -o-animation: fadeIn ease 3s; /* Support for Opera */
-  -ms-animation: fadeIn ease 3s; /* Support for Internet Explorer */
-  visibility: visible !important;
 }
 
 #tdc {
-  width: 40%;
-  max-width: 300px;
-  margin-bottom: 20px;
-  transition: 0.3s ease-out;
-  animation: fadeIn ease 3s; /* This line applies the animation */
-  -webkit-animation: fadeIn ease 3s; /* Support for Safari and Chrome */
-  -moz-animation: fadeIn ease 3s; /* Support for Firefox */
-  -o-animation: fadeIn ease 3s; /* Support for Opera */
-  -ms-animation: fadeIn ease 3s; /* Support for Internet Explorer */
-  visibility: visible !important;
+  width: min(180px, 38vw);
+  margin-top: 6px;
 }
 
 #loading-screen p {
-  font-size: 20px;
-  transition: 0.3s ease-in-out;
+  max-width: 520px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
 }
 
 #progress-bar-container {
-  width: 70%;
-  height: 30px;
-  background: #333;
-  border-radius: 15px;
+  width: min(440px, 76vw);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.16);
   overflow: hidden;
-  margin-bottom: 20px;
-  transition: 0.3s ease-in-out;
-  animation: fadeIn ease 3s; /* This line applies the animation */
-  -webkit-animation: fadeIn ease 3s; /* Support for Safari and Chrome */
-  -moz-animation: fadeIn ease 3s; /* Support for Firefox */
-  -o-animation: fadeIn ease 3s; /* Support for Opera */
-  -ms-animation: fadeIn ease 3s; /* Support for Internet Explorer */
-  visibility: visible !important;
 }
 
 #progress-bar {
   height: 100%;
   width: 0;
-  background: #C8CCCE;
-  transition: width 0.4s ease-in-out;
+  background: #fff;
+  transition: width 0.35s ease;
 }
 
-/* h3 {
-  color: #FFF;
-} */
+/* Scene */
 .scene-wrapper {
   position: relative;
-  display: flex;
-  flex-direction: column;
   width: 100%;
   height: 100%;
 }
 
-.color-options {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 1;
+a-scene {
+  position: absolute !important;
+  inset: 0;
 }
 
+/* Configurator panel */
 .color-options {
   position: fixed;
-  overflow: hidden;
+  left: 24px;
+  bottom: 24px;
+  z-index: 10;
+  width: min(320px, calc(100vw - 48px));
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
-  background-color: rgba(255, 255, 255, 0.628);
-  border: #000 solid 4px;
-  border-radius: 10px;
-  padding: 10px;
-  top: 0;
-  left: 0;
-  width: fit-content; /* the width of the tab */
-  height: fit-content;
-  transition: width 0.3s ease;
-  overflow-x: hidden;
+  gap: 14px;
+  padding: 18px;
+  overflow: hidden;
+  color: #fff;
+  background: rgba(8, 8, 8, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(18px) saturate(125%);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+}
+
+.color-options::before {
+  content: "CONFIGURE";
+  display: block;
+  padding-bottom: 2px;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+}
+
+.color-options > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.color-options > div + div {
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.color-options h3 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .color-container {
   display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
 }
 
-.body-color, .trim-color, .interior-color {
-  display: flex;
-  flex-direction: row;
-}
-
-button {
-  display: block;
-  width: 20px;
-  height: 20px;
-  border: #000 solid 4px;
-  border-radius: 25px;
+.color-options button {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  background-color: transparent;
-  color: #FFF;
+  outline: none;
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 0, 0, 0.18),
+    0 2px 10px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .color-options button:hover {
-  background-color: rgba(255, 255, 255, 0.628);
+  transform: translateY(-2px) scale(1.06);
+  border-color: #fff;
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 0, 0, 0.14),
+    0 6px 18px rgba(0, 0, 0, 0.28);
 }
 
-
-.color-option-body[data-color="#F00"] {
-  background-color: #F00;
+.color-options button:focus-visible {
+  border-color: #fff;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.3),
+    0 6px 18px rgba(0, 0, 0, 0.28);
 }
 
-.color-option-body[data-color="#0F0"] {
-  background-color: #0F0;
-}
-
-.color-option-body[data-color="#00F"] {
-  background-color: #00F;
-}
-
-.color-option-body[data-color="#FFF"] {
-  background-color: #FFF;
-}
-
-.color-option-body[data-color="#000"] {
-  background-color: #000;
-}
-
-.color-option-body[data-color="#d3b62c"] {
-  background-color: #d3b62c;
-}
-
-.color-option-trim[data-color="#F00"] {
-  background-color: #F00;
-}
-
-.color-option-trim[data-color="#0F0"] {
-  background-color: #0F0;
-}
-
-.color-option-trim[data-color="#00F"] {
-  background-color: #00F;
-}
-
-.color-option-trim[data-color="#FFF"] {
-  background-color: #FFF;
-}
-
-.color-option-trim[data-color="#000"] {
-  background-color: #000;
-}
-
-.color-option-trim[data-color="#d3b62c"] {
-  background-color: #d3b62c;
-}
-
+.color-option-body[data-color="#F00"],
+.color-option-trim[data-color="#F00"],
 .color-option-interior[data-color="#F00"] {
-  background-color: #F00;
+  background: #a51f26;
 }
 
+.color-option-body[data-color="#0F0"],
+.color-option-trim[data-color="#0F0"],
 .color-option-interior[data-color="#0F0"] {
-  background-color: #0F0;
+  background: #1f5f42;
 }
 
+.color-option-body[data-color="#00F"],
+.color-option-trim[data-color="#00F"],
 .color-option-interior[data-color="#00F"] {
-  background-color: #00F;
+  background: #23467c;
 }
 
+.color-option-body[data-color="#FFF"],
+.color-option-trim[data-color="#FFF"],
 .color-option-interior[data-color="#FFF"] {
-  background-color: #FFF;
+  background: #e7e7e3;
 }
 
+.color-option-body[data-color="#000"],
+.color-option-trim[data-color="#000"],
 .color-option-interior[data-color="#000"] {
-  background-color: #000;
+  background: #111;
 }
 
+.color-option-body[data-color="#d3b62c"],
+.color-option-trim[data-color="#d3b62c"],
 .color-option-interior[data-color="#d3b62c"] {
-  background-color: #d3b62c;
+  background: #9f8336;
 }
 
-#body-color {
-
+/* Optional informational bubble */
+.info-bubble {
+  display: none;
+  position: absolute;
+  max-width: 240px;
+  padding: 10px 12px;
+  background: rgba(8, 8, 8, 0.88);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
 }
 
-#inside-color {
-
-}
-
+/* Future test-drive control */
 #switch-button {
   position: fixed;
-  bottom: 0;
-  font-size: 1em;
-  font-family: 'Times New Roman', Times, serif;
-  padding: 10px 20px;
-  border: none;
-  background-color: rgba(255, 255, 255, 0.5);
-  color: #000;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  min-width: 130px;
+  height: 44px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(8, 8, 8, 0.78);
+  color: #fff;
   cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-  z-index: 1;
+  backdrop-filter: blur(12px);
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 #switch-button:hover {
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
 }
 
-/* Animations */
-
-/* The actual animation */
 @keyframes fadeIn {
-  0% {opacity:0;}
-  100% {opacity:1;}
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Safari and Chrome */
-@-webkit-keyframes fadeIn {
-  0% {opacity:0;}
-  100% {opacity:1;}
-}
-
-/* Firefox */
-@-moz-keyframes fadeIn {
-  0% {opacity:0;}
-  100% {opacity:1;}
-}
-
-/* Opera */
-@-o-keyframes fadeIn {
-  0% {opacity:0;}
-  100% {opacity:1;}
-}
-
-/* Internet Explorer */
-@-ms-keyframes fadeIn {
-  0% {opacity:0;}
-  100% {opacity:1;}
-}
-
-/* Media Query */
+/* Responsive configurator */
 @media screen and (max-width: 600px) {
-  #color-options {
-    width: 60px;
-    height: 50%;
-      /* add other styles for smaller screens here */
+  .color-options {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
   }
 
-  #color-options:hover {
-    transform: none;
+  .color-options::before {
+    font-size: 9px;
+  }
+
+  .color-options > div {
+    gap: 6px;
+  }
+
+  .color-options > div + div {
+    padding-top: 9px;
+  }
+
+  .color-options h3 {
+    font-size: 9px;
+  }
+
+  .color-container {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .color-options button {
+    width: 25px;
+    height: 25px;
+    flex-basis: 25px;
+  }
+
+  #loading-screen p {
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-height: 560px) and (orientation: landscape) {
+  .color-options {
+    top: 12px;
+    bottom: auto;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
   }
 }
