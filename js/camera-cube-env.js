@@ -102,24 +102,22 @@ AFRAME.registerComponent('camera-cube-env', {
 
 	  /**
 	   * Called when a component is removed (e.g., via removeAttribute).
-	   * Generally undoes all modifications to the entity.
+	   * Generally undoes any modifications made by the component.
 	   */
 	  remove: function () {},
 
-	  /**
-	   * Called on each scene tick.
-	   */
-	  // tick: function (t) { },
-
-	  /**
-	   * Called when entity pauses.
-	   * Use to stop or remove any dynamic or background behavior such as events.
-	   */
 	  pause: function () { },
-
-	  /**
-	   * Called when entity resumes.
-	   * Use to continue or add any dynamic or background behavior such as events.
-	   */
 	  play: function () { }
 	});
+
+// Load the second-pass showroom material/lighting treatment after the original
+// scene components have registered. Versioned so deploy previews and production
+// clients do not reuse an older cached polish pass.
+(function loadScenePolish() {
+  if (document.querySelector('script[data-scene-polish]')) return;
+  var script = document.createElement('script');
+  script.src = 'js/scene-polish.js?v=20260821-2354';
+  script.async = false;
+  script.setAttribute('data-scene-polish', 'true');
+  document.head.appendChild(script);
+})();
