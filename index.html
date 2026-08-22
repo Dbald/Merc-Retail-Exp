@@ -1,325 +1,385 @@
 <!doctype html>
 <html lang="en">
-<!-- Generated automatically by AFRAME Exporter for Blender - https://silverslade.itch.io/a-frame-blender-exporter -->
-
 <head>
-	<title>Mercades-Benz Experience</title>
-	<link rel="icon" type="image/png" href="favicon.ico" />
-	<meta name="description" content="3D Application">
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
-	<script type="text/javascript" src="js/webxr.js"></script>
-	<script type="text/javascript" src="js/joystick.js"></script>
-	<script type="text/javascript" src="js/camera-cube-env.js"></script>
-
-	<link rel="stylesheet" type="text/css" href="style.css">
+  <title>Mercedes-Benz Vision Duet Configurator</title>
+  <link rel="icon" type="image/png" href="favicon.ico" />
+  <meta name="description" content="Mercedes-Benz Vision Duet interactive WebXR configurator">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
+  <script type="text/javascript" src="js/webxr.js"></script>
+  <script type="text/javascript" src="js/joystick.js"></script>
+  <script type="text/javascript" src="js/camera-cube-env.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body onload="init();">
-	<script>
-
-AFRAME.registerComponent('model-color', {
-    multiple: true,  // allows multiple instances of the component
-    schema: {
+  <script>
+    AFRAME.registerComponent('model-color', {
+      multiple: true,
+      schema: {
         color: { type: 'color', default: '#AAA' },
         part: { type: 'string', default: 'Body_odi_CARPAINT_Red_0' }
-    },
+      },
 
-    update: function () {
+      update: function () {
         this.changeColor(this.data.color, this.data.part);
-    },
+      },
 
-    changeColor: function (color, part) {
+      changeColor: function (color, part) {
         var object3D = this.el.object3D;
         var newColor = new AFRAME.THREE.Color(color);
         object3D.traverse((node) => {
-            if (node.isMesh && node.name == part) {
-                if (node.material.map) {
-                    node.material.map = null;
-                }
-                node.material.color = newColor;
-            }
+          if (node.isMesh && node.name === part) {
+            if (node.material.map) node.material.map = null;
+            node.material.color = newColor;
+            node.material.needsUpdate = true;
+          }
         });
-    }
-});
-
-window.onload = function () {
-    const colorOptionsBody = document.querySelectorAll('.color-option-body');
-    const colorOptionsTrim = document.querySelectorAll('.color-option-trim');
-	const colorOptionsInterior = document.querySelectorAll('.color-option-interior');
-    var car = document.querySelector('#merc');
-
-    car.addEventListener('model-loaded', function () {
-        colorOptionsBody.forEach(function (button) {
-            button.addEventListener('click', function () {
-                var color = this.dataset.color;
-                car.setAttribute('model-color__body', 'color', color);
-                car.setAttribute('model-color__body', 'part', 'Body_odi_CARPAINT_Red_0');
-            });
-        });
-        colorOptionsTrim.forEach(function (button) {
-            button.addEventListener('click', function () {
-                var color = this.dataset.color;
-                car.setAttribute('model-color__trim', 'color', color);
-                car.setAttribute('model-color__trim', 'part', 'Star_BronzeTrim_0');
-            });
-        });
-		colorOptionsInterior.forEach(function (button) {
-            button.addEventListener('click', function () {
-                var color = this.dataset.color;
-                car.setAttribute('model-color__interior', 'color', color);
-                car.setAttribute('model-color__interior', 'part', 'FronSeatUpper_odi_ALCANTARA_FrontSeatUpper_0');
-            });
-        });
+      }
     });
-};
-  // And this line
 
-		document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
+      const car = document.querySelector('#merc');
+      const scene = document.querySelector('#scene1');
+      const loader = document.querySelector('#loading-screen');
+      const progressBar = document.querySelector('#progress-bar');
+      const models = document.querySelectorAll('#scene1 a-gltf-model');
+      const steps = document.querySelectorAll('.config-step');
+      const hotspots = document.querySelectorAll('.hotspot');
+      const swatches = document.querySelectorAll('.config-swatch[data-color]');
+      const paletteDots = document.querySelectorAll('.palette-dot[data-color]');
+      const customColor = document.querySelector('#custom-color-input');
+      const currentHex = document.querySelector('#current-hex');
+      const savePalette = document.querySelector('#save-palette');
+      const resetButton = document.querySelector('#reset-default');
+      const xrButton = document.querySelector('#xr-button');
+      const swatchRail = document.querySelector('#swatch-rail');
+      const addSwatch = document.querySelector('#add-swatch');
+      const panelTitle = document.querySelector('#selection-title');
+      const panelSubtitle = document.querySelector('#selection-subtitle');
 
-			// var switchButton = document.querySelector('#switch-button');
+      const categoryConfig = {
+        exterior: {
+          label: 'Exterior Color Options',
+          subtitle: 'Choose your exterior color for the Vision Duet Concept',
+          component: 'model-color__body',
+          part: 'Body_odi_CARPAINT_Red_0',
+          defaultColor: '#610000'
+        },
+        trim: {
+          label: 'Trim Finish Selection',
+          subtitle: 'Refine the metallic finish and signature details',
+          component: 'model-color__trim',
+          part: 'Star_BronzeTrim_0',
+          defaultColor: '#c49c6c'
+        },
+        interior: {
+          label: 'Interior Style Choices',
+          subtitle: 'Set the cabin tone and material expression',
+          component: 'model-color__interior',
+          part: 'FronSeatUpper_odi_ALCANTARA_FrontSeatUpper_0',
+          defaultColor: '#f1e9df'
+        }
+      };
 
-			// var scene1 = document.querySelector('#scene1');
-			// var scene2 = document.querySelector('#scene2');
+      const activeColors = {
+        exterior: categoryConfig.exterior.defaultColor,
+        trim: categoryConfig.trim.defaultColor,
+        interior: categoryConfig.interior.defaultColor
+      };
 
-			// var camera1 = document.querySelector('#camera_1');
-			// var camera2 = document.querySelector('#camera_2');
+      let activeCategory = 'exterior';
+      let modelsLoaded = 0;
 
-			// switchButton.addEventListener('click', function () {
-			// 	if (scene1.style.display === 'none') {
-			// 		scene1.style.display = 'block';
-			// 		scene2.style.display = 'none';
+      function normalizeHex(color) {
+        if (!color) return '#000000';
+        if (/^#[0-9a-fA-F]{6}$/.test(color)) return color.toLowerCase();
+        if (/^#[0-9a-fA-F]{3}$/.test(color)) {
+          return ('#' + color.slice(1).split('').map(c => c + c).join('')).toLowerCase();
+        }
+        return color;
+      }
 
-			// 		camera1.setAttribute('camera', 'active', true);
-			// 		camera2.setAttribute('camera', 'active', false);
+      function setActiveCategory(category) {
+        if (!categoryConfig[category]) return;
+        activeCategory = category;
+        steps.forEach(step => step.classList.toggle('active', step.dataset.category === category));
+        hotspots.forEach(hotspot => hotspot.classList.toggle('active', hotspot.dataset.category === category));
+        panelTitle.textContent = categoryConfig[category].label;
+        panelSubtitle.textContent = categoryConfig[category].subtitle;
+        const color = activeColors[category];
+        currentHex.textContent = normalizeHex(color);
+        customColor.value = normalizeHex(color);
+        updateSelectedSwatches(color);
+      }
 
-			// 		switchButton.textContent = 'Take a Ride';
+      function applyColor(color, category = activeCategory) {
+        const config = categoryConfig[category];
+        if (!config) return;
+        activeColors[category] = normalizeHex(color);
+        car.setAttribute(config.component, 'color', color);
+        car.setAttribute(config.component, 'part', config.part);
+        if (category === activeCategory) {
+          currentHex.textContent = normalizeHex(color);
+          customColor.value = normalizeHex(color);
+          updateSelectedSwatches(color);
+        }
+      }
 
-			// 		// Show color options
-			// 		colorOptions.style.display = 'block';
-			// 	} else {
-			// 		scene1.style.display = 'none';
-			// 		scene2.style.display = 'block';
+      function updateSelectedSwatches(color) {
+        const normalized = normalizeHex(color);
+        document.querySelectorAll('[data-color]').forEach(item => {
+          if (item.classList.contains('config-swatch') || item.classList.contains('palette-dot')) {
+            item.classList.toggle('selected', normalizeHex(item.dataset.color) === normalized);
+          }
+        });
+      }
 
-			// 		camera1.setAttribute('camera', 'active', false);
-			// 		camera2.setAttribute('camera', 'active', true);
+      function resetColors() {
+        Object.keys(categoryConfig).forEach(category => {
+          applyColor(categoryConfig[category].defaultColor, category);
+        });
+        setActiveCategory('exterior');
+      }
 
-			// 		switchButton.textContent = 'Go Back';
+      loader.style.opacity = '1';
+      if (!models.length) loader.style.opacity = '0';
 
-			// 		// Hide color options
-			// 		colorOptions.style.display = 'none';
-			// 	}
-			// });
+      models.forEach(model => {
+        model.addEventListener('model-loaded', function () {
+          modelsLoaded++;
+          progressBar.style.width = ((modelsLoaded / models.length) * 100) + '%';
+          if (model.id === 'merc') resetColors();
+          if (modelsLoaded === models.length) loader.style.opacity = '0';
+        });
+      });
 
-			var models = document.querySelectorAll('a-gltf-model');
-			var loader = document.querySelector('#loading-screen');
-			var progressBar = document.querySelector('#progress-bar');
-			var modelsLoaded = 0;
+      loader.addEventListener('transitionend', function () {
+        if (loader.style.opacity === '0') loader.style.display = 'none';
+      });
 
-			// fade in loading screen
-			loader.style.opacity = '1';
+      steps.forEach(step => step.addEventListener('click', () => setActiveCategory(step.dataset.category)));
+      hotspots.forEach(hotspot => hotspot.addEventListener('click', () => setActiveCategory(hotspot.dataset.category)));
+      swatches.forEach(swatch => swatch.addEventListener('click', () => applyColor(swatch.dataset.color)));
+      paletteDots.forEach(dot => dot.addEventListener('click', () => applyColor(dot.dataset.color)));
 
-			models.forEach(function (model) {
-				model.addEventListener('model-loaded', function () {
-					modelsLoaded++;
-					var progress = (modelsLoaded / models.length) * 100;
-					progressBar.style.width = progress + '%';
+      customColor.addEventListener('input', function () {
+        applyColor(this.value);
+      });
 
-					if (modelsLoaded === models.length) {
-						// all models have loaded
-						loader.style.opacity = '0';
-					}
-				});
-			});
+      savePalette.addEventListener('click', function () {
+        const savedColor = activeColors[activeCategory];
+        const exists = Array.from(swatchRail.querySelectorAll('.config-swatch[data-color]'))
+          .some(item => normalizeHex(item.dataset.color) === normalizeHex(savedColor));
+        if (exists) return;
 
-			loader.addEventListener('transitionend', function () {
-				if (loader.style.opacity == '0') {
-					loader.style.display = 'none';
-				}
-			});
+        const button = document.createElement('button');
+        button.className = 'config-swatch saved-swatch';
+        button.dataset.color = savedColor;
+        button.setAttribute('aria-label', 'Saved color ' + savedColor);
+        button.innerHTML = '<span class="swatch-orb" style="--swatch:' + savedColor + '"></span><span>' + normalizeHex(savedColor) + '</span>';
+        button.addEventListener('click', () => applyColor(button.dataset.color));
+        swatchRail.insertBefore(button, addSwatch);
+      });
 
-			var car = document.querySelector('#merc');
-			var carInfo = document.querySelector('#carInfo');
+      addSwatch.addEventListener('click', function () {
+        customColor.click();
+      });
 
-			car.addEventListener('mouseenter', function () {
-				carInfo.style.display = 'block';
-			});
+      resetButton.addEventListener('click', resetColors);
 
-			car.addEventListener('mouseleave', function () {
-				carInfo.style.display = 'none';
-			});
+      xrButton.addEventListener('click', function () {
+        if (scene && typeof scene.enterVR === 'function') scene.enterVR();
+      });
 
-		});
+      setActiveCategory('exterior');
+    });
+  </script>
 
+  <div id="loading-screen">
+    <div id="loading-screen-container">
+      <div id="greeting">
+        <img id="logo" src="/resources/merc-logo.png" alt="Mercedes-Benz" />
+        <p>Welcome to the Mercedes-Benz Virtual Showroom. Preparing the Vision Duet Concept.</p>
+      </div>
+      <div id="progress-bar-container"><div id="progress-bar"></div></div>
+      <div id="made-by">
+        <p>Experience by</p>
+        <img id="tdc" src="/resources/tdc.png" alt="The Devinci Code" />
+      </div>
+    </div>
+  </div>
 
-	</script>
+  <div class="scene-wrapper">
+    <a-scene id="scene1" shadow="type: pcfsoft; autoUpdate: true;"
+      renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;"
+      vr-mode-ui="enabled: false">
+      <a-assets>
+        <a-asset-item id="Baked_Baked_0" src="./assets/Baked_Baked_0.gltf"></a-asset-item>
+        <a-assets-item id="logo-model" src="/assets/merc.glb"></a-assets-item>
+        <a-asset-item id="leg_Leg_0" src="./assets/leg_Leg_0.gltf"></a-asset-item>
+        <a-asset-item id="leg_Leg_0.001" src="./assets/leg_Leg_0.001.gltf"></a-asset-item>
+        <a-asset-item id="Material2.001" src="./assets/Material2.001.gltf"></a-asset-item>
+        <a-asset-item id="Modern Chair" src="./assets/Modern Chair.gltf"></a-asset-item>
+        <a-asset-item id="Modern Chair.001" src="./assets/Modern Chair.001.gltf"></a-asset-item>
+        <a-asset-item id="Modern Chair.002" src="./assets/Modern Chair.002.gltf"></a-asset-item>
+        <a-asset-item id="plant" src="/assets/scene.gltf"></a-asset-item>
+        <a-asset-item id="monstera" src="/assets/monstera.gltf"></a-asset-item>
+        <a-asset-item id="car" src="/assets/futureMerc.gltf"></a-asset-item>
+        <img id="sky" src="./resources/sky.jpg" alt="sky" crossorigin="anonymous">
+      </a-assets>
 
-	<div id="loading-screen">
-		<div id="loading-screen-container">
-			<div id="greeting">
-				<img id="logo" src="/resources/merc-logo.png" />
-				<p>Welcome to the Mercedes-Benz Virtual Showroom. Get ready for an immersive Mercedes-Benz experience.
-				</p>
-			</div>
-			<div id="progress-bar-container">
-				<div id="progress-bar"></div>
-			</div>
-			<div id="made-by">
-				<p>Experience by:</p>
-				<img id="tdc" src="/resources/tdc.png" />
-			</div>
-		</div>
-	</div>
+      <a-gltf-model src="#Baked_Baked_0" scale="1 1.482 1.359" position="-18.295 15.361 1.029" visible="" shadow=""></a-gltf-model>
+      <a-gltf-model src="#leg_Leg_0" scale="" position="-27.101 1.155 -13.441" visible="" shadow=""></a-gltf-model>
+      <a-gltf-model src="#leg_Leg_0.001" scale="" position="-30.479 1.087 -8.293" visible="" shadow=""></a-gltf-model>
+      <a-gltf-model src="#Material2.001" scale="" position="2.313 -0.612 -0.1" visible="" shadow=""></a-gltf-model>
+      <a-gltf-model src="#Modern Chair" scale="" position="-24.022 1.08 24.703" visible="" shadow=""></a-gltf-model>
+      <a-gltf-model src="#Modern Chair.001" scale="" position="-30.066 1.08 21.451" visible="" shadow=""></a-gltf-model>
+      <a-gltf-model src="#Modern Chair.002" scale="" position="-17.626 1.08 21.088" visible="" shadow=""></a-gltf-model>
+      <a-gltf-model src="#plant" scale="2.989 2.979 2.989" position="-31.511 -0.069 -24.648" visible="" shadow=""></a-gltf-model>
+      <a-gltf-model src="#monstera" scale="4.107 4.107 4.117" position="-30.071 -0.269 26.146" visible="" shadow=""></a-gltf-model>
+      <a-gltf-model id="merc" src="#car" scale="0.707 0.707 0.707" position="0.049 0 0.169" visible="" shadow=""
+        rotation="0 -271.886 0"
+        animation="property: rotation; to: 0 -360 0; from: 0 0 0; easing: linear; loop: true; dur: 100000">
+      </a-gltf-model>
+      <a-circle geometry="" material="color: #828282" rotation="-90 -271.886 0" position="0.641 0 -0.977"
+        scale="13.644 13.644 13.644"
+        animation="property: rotation; to: -90 -360 0; from: -90 0 0; easing: linear; loop: true; dur: 100000"></a-circle>
 
+      <a-entity id="player" position="-36 4 0" rotation="0.6 -86.862 0">
+        <a-entity id="camera_1" camera="active: true; fov: 35" position="0 2 0" look-controls></a-entity>
+        <a-entity id="leftHand" oculus-touch-controls="hand: left" vive-controls="hand: left"></a-entity>
+        <a-entity id="rightHand" laser-controls oculus-touch-controls="hand: right" vive-controls="hand: right"
+          raycaster="far: 10.0; interval: 1500.0; objects: .clickable,.links"></a-entity>
+      </a-entity>
 
-	<!-- Configurator  -->
+      <a-sky src="#sky" material="" geometry="" rotation="0 90 0"></a-sky>
+    </a-scene>
 
-	<div class="scene-wrapper">
-		<div class="color-options">
-			<!-- <img id="customize" src="/resources/CustomWhite.png" alt="Customize" /> -->
-			<div id="body-color">
-				<h3>Body Color:</h3>
-				<div class="color-container">
-					<button class="color-option-body" data-color="#F00"></button>
-					<button class="color-option-body" data-color="#0F0"></button>
-					<button class="color-option-body" data-color="#00F"></button>
-					<button class="color-option-body" data-color="#FFF"></button>
-					<button class="color-option-body" data-color="#000"></button>
-					<button class="color-option-body" data-color="#d3b62c"></button>
-				</div>
-			</div>
-			<div id="trim-color">
-				<h3>Trim Color:</h3>
-				<div class="color-container">
-					<button class="color-option-trim" data-color="#F00"></button>
-					<button class="color-option-trim" data-color="#0F0"></button>
-					<button class="color-option-trim" data-color="#00F"></button>
-					<button class="color-option-trim" data-color="#FFF"></button>
-					<button class="color-option-trim" data-color="#000"></button>
-					<button class="color-option-trim" data-color="#d3b62c"></button>
-				</div>
-			</div>
-			<div id="inside-color">
-				<h3>Interior Color:</h3>
-				<div class="color-container">
-					<button class="color-option-interior" data-color="#F00"></button>
-					<button class="color-option-interior" data-color="#0F0"></button>
-					<button class="color-option-interior" data-color="#00F"></button>
-					<button class="color-option-interior" data-color="#FFF"></button>
-					<button class="color-option-interior" data-color="#000"></button>
-					<button class="color-option-interior" data-color="#d3b62c"></button>
-				</div>
-			</div>
+    <div class="config-shell">
+      <header class="config-header">
+        <div class="brand-lockup">
+          <img src="/resources/merc-logo.png" alt="Mercedes-Benz" />
+          <div class="brand-copy">
+            <strong>Mercedes-Benz</strong>
+            <span>Vision Duet Concept</span>
+          </div>
+        </div>
+        <div class="config-title">Build Configurator</div>
+        <button id="xr-button" class="xr-button" type="button"><span>⌁</span> View in XR</button>
+      </header>
 
-			<!-- <button id="switch-button">Take a Ride</button> -->
-		</div>
+      <aside class="left-rail">
+        <nav class="config-steps" aria-label="Configurator sections">
+          <button class="config-step active" data-category="exterior" type="button">
+            <span class="step-number">01</span><span><strong>Exterior</strong><small>Color Options</small></span>
+          </button>
+          <button class="config-step" data-category="trim" type="button">
+            <span class="step-number">02</span><span><strong>Trim</strong><small>Finish Selection</small></span>
+          </button>
+          <button class="config-step" data-category="interior" type="button">
+            <span class="step-number">03</span><span><strong>Interior</strong><small>Style Choices</small></span>
+          </button>
+        </nav>
 
+        <div class="navigation-card">
+          <div class="navigation-title"><span>ⓘ</span> Navigation</div>
+          <p>Click and drag to rotate</p>
+          <p>Use scroll to zoom</p>
+          <p>Select options to customize</p>
+        </div>
+      </aside>
 
+      <main class="stage-copy">
+        <div class="selection-copy">
+          <div id="selection-title" class="selection-title">Exterior Color Options</div>
+          <p id="selection-subtitle">Choose your exterior color for the Vision Duet Concept</p>
+        </div>
+        <button class="hotspot hotspot-interior" data-category="interior" type="button"><span></span><em>Interior</em></button>
+        <button class="hotspot hotspot-exterior active" data-category="exterior" type="button"><span></span><em>Exterior</em></button>
+        <button class="hotspot hotspot-trim" data-category="trim" type="button"><span></span><em>Trim</em></button>
+      </main>
 
+      <aside class="palette-panel">
+        <div class="panel-heading">Color Palettes</div>
 
+        <div class="palette-group">
+          <span>Lush Autumn</span>
+          <div class="palette-row">
+            <button class="palette-dot" type="button" data-color="#8e351d" style="--dot:#8e351d" aria-label="Lush Autumn deep rust"></button>
+            <button class="palette-dot" type="button" data-color="#cf4e2c" style="--dot:#cf4e2c" aria-label="Lush Autumn orange"></button>
+            <button class="palette-dot" type="button" data-color="#c98252" style="--dot:#c98252" aria-label="Lush Autumn copper"></button>
+            <button class="palette-dot" type="button" data-color="#e5ad79" style="--dot:#e5ad79" aria-label="Lush Autumn sand"></button>
+            <button class="palette-dot" type="button" data-color="#f6dfcf" style="--dot:#f6dfcf" aria-label="Lush Autumn cream"></button>
+          </div>
+        </div>
 
+        <div class="palette-group">
+          <span>New Spring</span>
+          <div class="palette-row">
+            <button class="palette-dot" type="button" data-color="#1f6b2a" style="--dot:#1f6b2a" aria-label="New Spring forest"></button>
+            <button class="palette-dot" type="button" data-color="#4d914b" style="--dot:#4d914b" aria-label="New Spring green"></button>
+            <button class="palette-dot" type="button" data-color="#79a96f" style="--dot:#79a96f" aria-label="New Spring sage"></button>
+            <button class="palette-dot" type="button" data-color="#b4cfaa" style="--dot:#b4cfaa" aria-label="New Spring light sage"></button>
+            <button class="palette-dot" type="button" data-color="#e1efdd" style="--dot:#e1efdd" aria-label="New Spring mist"></button>
+          </div>
+        </div>
 
-		<a-scene id="scene1" shadow="type: pcfsoft; autoUpdate: true;"
-			renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;"
-			vr-mode-ui="enabled: false">
-			<!-- Assets -->
-			<a-assets>
+        <div class="palette-group">
+          <span>Contemporary</span>
+          <div class="palette-row">
+            <button class="palette-dot" type="button" data-color="#610000" style="--dot:#610000" aria-label="Contemporary burgundy"></button>
+            <button class="palette-dot" type="button" data-color="#0c0c0c" style="--dot:#0c0c0c" aria-label="Contemporary black"></button>
+            <button class="palette-dot" type="button" data-color="#1f2a5c" style="--dot:#1f2a5c" aria-label="Contemporary navy"></button>
+            <button class="palette-dot" type="button" data-color="#8c9498" style="--dot:#8c9498" aria-label="Contemporary silver"></button>
+            <button class="palette-dot" type="button" data-color="#c49c6c" style="--dot:#c49c6c" aria-label="Contemporary champagne"></button>
+          </div>
+        </div>
 
-				<a-asset-item id="Baked_Baked_0" src="./assets/Baked_Baked_0.gltf"></a-asset-item>
-				<a-assets-item id="logo" src="/assets/merc.glb"></a-assets-item>
-				<a-asset-item id="leg_Leg_0" src="./assets/leg_Leg_0.gltf"></a-asset-item>
-				<a-asset-item id="leg_Leg_0.001" src="./assets/leg_Leg_0.001.gltf"></a-asset-item>
-				<a-asset-item id="Material2.001" src="./assets/Material2.001.gltf"></a-asset-item>
+        <div class="custom-color-wrap">
+          <label class="color-wheel" aria-label="Choose custom color">
+            <input id="custom-color-input" type="color" value="#610000" />
+            <span class="wheel-indicator"></span>
+          </label>
+          <div class="value-rail"><span></span></div>
+        </div>
 
-				<a-asset-item id="Modern Chair" src="./assets/Modern Chair.gltf"></a-asset-item>
-				<a-asset-item id="Modern Chair.001" src="./assets/Modern Chair.001.gltf"></a-asset-item>
-				<a-asset-item id="Modern Chair.002" src="./assets/Modern Chair.002.gltf"></a-asset-item>
-				<a-asset-item id="plant" src="/assets/scene.gltf"></a-asset-item>
-				<a-asset-item id="monstera" src="/assets/monstera.gltf"></a-asset-item>
-				<a-asset-item id="car" src="/assets/futureMerc.gltf"></a-asset-item>
+        <div class="tone-slider"><span class="tone-fill"></span><i></i></div>
+        <div id="current-hex" class="current-hex">#610000</div>
 
-				<img id="sky" src="./resources/sky.jpg" alt="sky" crossorigin="anonymous">
+        <button id="save-palette" class="panel-action primary" type="button">☆ <span>Save to Palette</span></button>
+        <button id="reset-default" class="panel-action" type="button">↻ <span>Reset to Default</span></button>
+      </aside>
 
-			</a-assets>
-
-			<!-- Entities -->
-
-			<a-gltf-model src="#Baked_Baked_0" scale="1 1.482 1.359" position="-18.295 15.361 1.029" visible=""
-				shadow=""></a-gltf-model>
-			<a-gltf-model src="#leg_Leg_0" scale="" position="-27.101 1.155 -13.441" visible=""
-				shadow=""></a-gltf-model>
-			<a-gltf-model src="#leg_Leg_0.001" scale="" position="-30.479 1.087 -8.293" visible=""
-				shadow=""></a-gltf-model>
-			<a-gltf-model src="#Material2.001" scale="" position="2.313 -0.612 -0.1" visible=""
-				shadow=""></a-gltf-model>
-			<a-gltf-model src="#Modern Chair" scale="" position="-24.022 1.08 24.703" visible=""
-				shadow=""></a-gltf-model>
-			<a-gltf-model src="#Modern Chair.001" scale="" position="-30.066 1.08 21.451" visible=""
-				shadow=""></a-gltf-model>
-			<a-gltf-model src="#Modern Chair.002" scale="" position="-17.626 1.08 21.088" visible=""
-				shadow=""></a-gltf-model>
-			<a-gltf-model src="#plant" scale="2.989 2.979 2.989" position="-31.511 -0.069 -24.648" visible=""
-				shadow=""></a-gltf-model>
-			<a-gltf-model src="#monstera" scale="4.107 4.107 4.117" position="-30.071 -0.269 26.146" visible=""
-				shadow=""></a-gltf-model>
-			<a-gltf-model id="merc" src="#car" scale="0.707 0.707 0.707" position="0.049 0 0.169" visible="" shadow=""
-				rotation="0 -271.886 0" model-color="color: #00F"
-				animation="property: rotation; to: 0 -360 0; from: 0 0 0; easing: linear; loop: true; dur: 100000">
-				<div class="info-bubble" id="carInfo">
-					<p>This is a Mercedes-Benz car. Hover for more info.</p>
-				</div>
-			</a-gltf-model>
-			<a-circle geometry="" material="color: #828282" rotation="-90 -271.886 0" position="0.641 0 -0.977"
-				scale="13.644 13.644 13.644"
-				animation="property: rotation; to: -90 -360 0; from: -90 0 0; easing: linear; loop: true; dur: 100000"></a-circle>
-
-			<!-- Camera -->
-			<a-entity id="player" position="-36 4 0" rotation="0.6 -86.862 0">
-				<a-entity id="camera_1" camera="active: true; fov: 35" position="0 2 0" look-controls>
-				</a-entity>
-				<a-entity id="leftHand" oculus-touch-controls="hand: left" vive-controls="hand: left"></a-entity>
-				<a-entity id="rightHand" laser-controls oculus-touch-controls="hand: right" vive-controls="hand: right"
-					raycaster="far: 10.0; interval: 1500.0; objects: .clickable,.links"></a-entity>
-			</a-entity>
-
-			<!-- Sky -->
-			<a-sky src="#sky" material="" geometry="" rotation="0 90 0"></a-sky>
-		</a-scene>
-
-		<!-- Second Scene  -->
-
-		<!-- <a-scene id="scene2" style="display: none" shadow="type: pcfsoft; autoUpdate: true;"
-			renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;"
-			vr-mode-ui="enabled: false">
-
-			<a-assets>
-				<a-assets-item id="city" src="/assets/testdrive_city.gltf"></a-assets-item>
-				<a-assets-item id="merc-test" src="/assets/testdrive_car.gltf"></a-assets-item>
-
-			</a-assets>
-			 Sky
-			<a-sky src="#sky" material="" geometry="" rotation="0 90 0" scale="2 2 2"></a-sky>
-			Your hidden space's entities go here 
-			<a-entity id="test-drive">
-				<a-camera id="camera_2" position="1 1 1" rotation="1 1 1" camera="fov: 35"
-					follow-object="target: #testCar; distance: 0 0 0" data-aframe-inspector-original-camera="">
-				</a-camera>
-				<a-entity id="leftHand" oculus-touch-controls="hand: left" vive-controls="hand: left"></a-entity>
-				<a-entity id="rightHand" laser-controls oculus-touch-controls="hand: right" vive-controls="hand: right"
-					raycaster="far: 10.0; interval: 1500.0; objects: .clickable,.links"></a-entity>
-			</a-entity>
-			<a-gltf-model src="#city" animation-mixer></a-gltf-model>
-			<a-gltf-model id="testCar" src="#merc-test" animation-mixer>
-
-
-			</a-gltf-model>
-
-		</a-scene> -->
-	</div>
+      <section class="swatch-dock" aria-label="Color selections">
+        <div id="swatch-rail" class="swatch-rail">
+          <button class="config-swatch selected" type="button" data-color="#610000" aria-label="Burgundy #610000">
+            <span class="swatch-orb" style="--swatch:#610000"></span><span>#610000</span>
+          </button>
+          <button class="config-swatch" type="button" data-color="#0c0c0c" aria-label="Black #0c0c0c">
+            <span class="swatch-orb" style="--swatch:#0c0c0c"></span><span>#0c0c0c</span>
+          </button>
+          <button class="config-swatch" type="button" data-color="#1f2a5c" aria-label="Navy #1f2a5c">
+            <span class="swatch-orb" style="--swatch:#1f2a5c"></span><span>#1f2a5c</span>
+          </button>
+          <button class="config-swatch" type="button" data-color="#8c9498" aria-label="Silver #8c9498">
+            <span class="swatch-orb" style="--swatch:#8c9498"></span><span>#8c9498</span>
+          </button>
+          <button class="config-swatch" type="button" data-color="#c49c6c" aria-label="Champagne #c49c6c">
+            <span class="swatch-orb" style="--swatch:#c49c6c"></span><span>#c49c6c</span>
+          </button>
+          <button class="config-swatch" type="button" data-color="#f57577" aria-label="Coral #f57577">
+            <span class="swatch-orb" style="--swatch:#f57577"></span><span>#f57577</span>
+          </button>
+          <button id="add-swatch" class="config-swatch add-swatch" type="button" aria-label="Add custom color">
+            <span class="swatch-orb add">＋</span><span>Add to Palette</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
 </body>
-
 </html>
-<!-- Generated automatically by AFRAME Exporter for Blender - https://silverslade.itch.io/a-frame-blender-exporter -->
