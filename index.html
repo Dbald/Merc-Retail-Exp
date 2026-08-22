@@ -9,13 +9,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
-  <script type="text/javascript" src="js/webxr.js"></script>
+  <script type="text/javascript" src="js/webxr.js?v=20260821-2348"></script>
   <script type="text/javascript" src="js/joystick.js"></script>
   <script type="text/javascript" src="js/camera-cube-env.js"></script>
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
-<body onload="init();">
+<body onload="init(); installSceneFidelity();">
   <script>
     AFRAME.registerComponent('model-color', {
       multiple: true,
