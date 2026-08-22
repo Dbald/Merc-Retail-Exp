@@ -114,7 +114,7 @@ AFRAME.registerComponent('camera-cube-env', {
 // scene treatment synchronously too, so its DOMContentLoaded/load handlers are
 // registered before either event can fire. The previous dynamic loader could
 // arrive after both events, leaving only the first-pass faceted rocks visible.
-document.write('<script src="js/scene-polish.js?v=20260822-1621" data-scene-polish="true"><\\/script>');
+document.write('<script src="js/scene-polish.js?v=20260822-1621" data-scene-polish="true"></' + 'script>');
 
 // Preserve the selected exterior paint color under the environment map. The
 // first reflection pass pushed body metalness/env intensity high enough that
